@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jogo de Rifa e Garrafas d'Água</title>
+    <style>
+        :root {
+            --primary-green: #0f0;
+            --dark-green: #0a0;
+            --background-dark: #222;
+            --background-light: #333;
+            --text-color: #e0ffe0;
+            --border-color: #0c0;
+            --button-bg-hover: rgba(0, 255, 0, 0.3);
+            --shadow-color: rgba(0, 255, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Arial', sans-serif, 'Courier New', monospace;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-image: linear-gradient(to bottom, #111, var(--background-dark));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #000;
+            padding: 30px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px; /* Softer edges */
+            box-shadow: 0 0 20px var(--shadow-color);
+            width: 90%;
+            max-width: 600px; /* Max width for larger screens */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Spacing between elements */
+        }
+
+        h1 {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            color: var(--primary-green);
+            text-shadow: 0 0 8px var(--primary-green);
+        }
+
+        #output {
+            flex-grow: 1;
+            margin-bottom: 15px;
+            overflow-y: auto;
+            border: 2px solid var(--border-color);
+            padding: 15px;
+            background: #000;
+            color: var(--text-color);
+            font-size: clamp(14px, 2.2vw, 18px); /* Slightly larger text */
+            text-shadow: 0 0 5px rgba(0,255,0,0.7);
+            line-height: 1.6; /* Improved line spacing */
+            font-weight: bold;
+            text-align: left; /* Align text left for better readability */
+            max-height: 250px; /* Fixed max height for scroll */
+            min-height: 100px;
+            border-radius: 5px;
+        }
+
+        #output p {
+            margin: 5px 0;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #input {
+            width: 100%;
+            padding: 15px;
+            box-sizing: border-box;
+            background: #000;
+            color: var(--primary-green);
+            border: 2px solid var(--border-color);
+            border-radius: 25px; /* Pill shape */
+            font-family: 'Arial', sans-serif, 'Courier New', monospace;
+            font-size: clamp(16px, 3vw, 20px);
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #input:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        .action-button {
+            font-size: clamp(16px, 3vw, 20px);
+            padding: 12px 28px;
+            margin: 5px auto; /* Adjust margin */
+            background: #000;
+            color: var(--primary-green);
+            border: 2px solid var(--border-color);
+            border-radius: 25px; /* Pill shape */
+            cursor: pointer;
+            width: 100%;
+            max-width: 250px; /* Wider buttons */
+            font-family: 'Arial', sans-serif, 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 5px rgba(0,255,0,0.3);
+        }
+
+        .action-button:hover:not(:disabled) {
+            background: var(--button-bg-hover);
+            box-shadow: 0 0 15px var(--shadow-color);
+            transform: translateY(-2px); /* Slight lift effect */
+        }
+        
+        .action-button:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 0 10px var(--shadow-color);
+        }
+
+        .action-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background-color: #1a1a1a;
+            border-color: #555;
+            color: #888;
+        }
+
+        /* Main Menu Buttons */
+        #mainMenuButtons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        #mainMenuButtons .action-button {
+            max-width: 300px; /* Slightly wider buttons for main menu */
+        }
+
+
+        /* Custom Prompt Styling */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7); /* Darker overlay */
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-prompt {
+            background: #1a1a1a; /* Darker background */
+            padding: 30px;
+            border: 2px solid var(--primary-green);
+            border-radius: 8px;
+            z-index: 1000;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            color: var(--text-color);
+            font-family: 'Arial', sans-serif, 'Courier New', monospace;
+            box-shadow: 0 0 25px var(--shadow-color);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .custom-prompt p {
+            font-size: clamp(18px, 4.5vw, 24px); /* Larger prompt text */
+            margin-bottom: 20px;
+            text-shadow: 0 0 6px var(--primary-green);
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .custom-prompt input {
+            font-size: clamp(16px, 3.5vw, 20px);
+            padding: 15px;
+            width: 90%;
+            max-width: 300px;
+            margin: 20px auto;
+            text-align: center;
+            background: #000;
+            color: var(--primary-green);
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            font-family: 'Arial', sans-serif, 'Courier New', monospace;
+            outline: none;
+        }
+
+        .custom-prompt .button-group {
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically on small screens */
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .custom-prompt button {
+            font-size: clamp(16px, 3.5vw, 20px);
+            padding: 12px 35px;
+            margin: 0 auto; /* Center buttons */
+            background: var(--dark-green); /* Solid green for OK button */
+            color: white;
+            border: none;
+            border-radius: 25px; /* Pill shape */
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 0 10px rgba(0,255,0,0.5);
+            width: 80%; /* Make buttons wider */
+            max-width: 250px;
+        }
+
+        .custom-prompt button.secondary {
+            background-color: #555; /* A different color for secondary actions */
+            box-shadow: none;
+        }
+        .custom-prompt button.secondary:hover {
+            background-color: #777;
+        }
+
+        .custom-prompt button:hover {
+            background: var(--primary-green);
+            transform: translateY(-2px);
+        }
+
+        @media (min-width: 500px) { /* Arrange buttons horizontally on larger screens */
+            .custom-prompt .button-group {
+                flex-direction: row;
+                justify-content: center;
+            }
+            .custom-prompt button {
+                width: auto;
+                margin: 0 10px;
+            }
+        }
+
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                width: 95%;
+            }
+            h1 {
+                font-size: clamp(24px, 6vw, 36px);
+            }
+            #output {
+                max-height: 200px;
+            }
+            .action-button {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            #output {
+                font-size: clamp(12px, 3vw, 16px);
+                max-height: 150px;
+            }
+            .action-button {
+                font-size: clamp(14px, 3.5vw, 18px);
+                padding: 10px 20px;
+            }
+            .custom-prompt p {
+                font-size: clamp(16px, 5vw, 20px);
+            }
+            .custom-prompt input {
+                font-size: clamp(14px, 4vw, 18px);
+                padding: 10px;
+            }
+            .custom-prompt button {
+                font-size: clamp(14px, 4vw, 18px);
+                padding: 10px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Jogo de Rifa e Garrafas d'Água</h1>
+        <div id="output"></div>
+        <div id="mainMenuButtons"></div> 
+
+        <input type="text" id="input" placeholder="Digite sua escolha..." style="display:none;" />
+        <button id="submit" class="action-button" style="display:none;">🎲 Enviar</button>
+        <button id="reset" class="action-button" style="display:none;">🔄 Reiniciar Jogo</button>
+    </div>
+    <script>
+        let saldoDinheiro = 5.0;
+        let quantidadeGarrafasAgua = 0;
+        let ganhouRifa = false;
+
+        const output = document.getElementById('output');
+        const input = document.getElementById('input');
+        const submitButton = document.getElementById('submit');
+        const resetButton = document.getElementById('reset');
+        const mainMenuButtonsDiv = document.getElementById('mainMenuButtons'); // New div for main menu buttons
+
+        function atualizarSaida(mensagem) {
+            output.innerHTML += `<p>${mensagem}</p>`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function customPrompt(message, options = []) {
+            return new Promise(resolve => {
+                const overlay = document.createElement('div');
+                overlay.className = 'overlay';
+                
+                const promptDiv = document.createElement('div');
+                promptDiv.className = 'custom-prompt';
+                
+                let contentHtml = `<p>${message}</p>`;
+                if (options.length > 0) {
+                    contentHtml += '<div class="button-group">';
+                    options.forEach(option => {
+                        contentHtml += `<button data-value="${option.value}" class="${option.className || ''}">${option.text}</button>`;
+                    });
+                    contentHtml += '</div>';
+                } else {
+                    contentHtml += `
+                        <input type="text" autofocus>
+                        <div class="button-group">
+                            <button id="promptOkButton">OK</button>
+                        </div>
+                    `;
+                }
+                promptDiv.innerHTML = contentHtml;
+                
+                document.body.appendChild(overlay);
+                document.body.appendChild(promptDiv);
+                
+                const promptInput = promptDiv.querySelector('input');
+                
+                if (promptInput) {
+                    promptInput.focus();
+                    const promptOkButton = promptDiv.querySelector('#promptOkButton');
+                    const submitAndResolve = () => {
+                        const value = promptInput.value;
+                        document.body.removeChild(overlay);
+                        document.body.removeChild(promptDiv);
+                        resolve(value);
+                    };
+                    promptOkButton.addEventListener('click', submitAndResolve);
+                    promptInput.addEventListener('keypress', (event) => {
+                        if (event.key === 'Enter') {
+                            submitAndResolve();
+                        }
+                    });
+                } else {
+                    promptDiv.querySelectorAll('.button-group button').forEach(button => {
+                        button.addEventListener('click', () => {
+                            document.body.removeChild(overlay);
+                            document.body.removeChild(promptDiv);
+                            resolve(button.dataset.value);
+                        });
+                    });
+                }
+            });
+        }
+
+        function iniciarJogo() {
+            atualizarSaida("Você encontrou R$5,00 no bolso do casaco! O que você vai fazer com eles?");
+            menuPrincipal();
+        }
+
+        function menuPrincipal() {
+            atualizarSaida(`\n--- Saldo Atual: R$${saldoDinheiro.toFixed(2)} | Garrafas d'Água: ${quantidadeGarrafasAgua} ---`);
+            atualizarSaida("Escolha sua estratégia:");
+            
+            // Clear existing main menu buttons
+            mainMenuButtonsDiv.innerHTML = '';
+            
+            // Hide input and submit button for main menu
+            input.style.display = 'none';
+            submitButton.style.display = 'none';
+
+            // Create and append main menu buttons
+            const raffleButton = document.createElement('button');
+            raffleButton.className = 'action-button';
+            raffleButton.textContent = '🎲 Jogar na rifa (Custo: R$5,00 - Prêmio: R$500,00)';
+            raffleButton.addEventListener('click', async () => {
+                submitButton.disabled = true; // Disable buttons during action
+                input.disabled = true;
+                await jogarRifa();
+            });
+            mainMenuButtonsDiv.appendChild(raffleButton);
+
+            const manageBottlesButton = document.createElement('button');
+            manageBottlesButton.className = 'action-button';
+            manageBottlesButton.textContent = "💧 Gerenciar Garrafas d'Água (Comprar/Vender)";
+            manageBottlesButton.addEventListener('click', async () => {
+                submitButton.disabled = true; // Disable buttons during action
+                input.disabled = true;
+                await gerenciarGarrafas();
+            });
+            mainMenuButtonsDiv.appendChild(manageBottlesButton);
+
+            resetButton.style.display = 'none'; // Ensure reset button is hidden in main menu
+        }
+
+        async function jogarRifa() {
+            // Hide main menu buttons
+            mainMenuButtonsDiv.style.display = 'none';
+            input.style.display = 'block'; // Show input for raffle number
+            submitButton.style.display = 'block'; // Show submit button for raffle number
+
+            if (saldoDinheiro >= 5.0) {
+                saldoDinheiro -= 5.0;
+                atualizarSaida("\nVocê gastou R$5,00 na rifa.");
+                let numeroEscolhido = await customPrompt("Escolha um número para a rifa (entre 1 e 1000):");
+                numeroEscolhido = parseInt(numeroEscolhido); // Ensure it's a number
+
+                // After prompt, hide input and submit, show main menu buttons
+                input.style.display = 'none';
+                submitButton.style.display = 'none';
+                mainMenuButtonsDiv.style.display = 'flex'; // Re-show main menu buttons
+
+
+                if (isNaN(numeroEscolhido) || numeroEscolhido < 1 || numeroEscolhido > 1000) {
+                    atualizarSaida("Número inválido! Por favor, escolha um número entre 1 e 1000.");
+                    saldoDinheiro += 5.0; // Refund if input is invalid
+                    verificarFimJogo(); // Go back to menu or end game
+                    return;
+                }
+
+                let numeroSorteado = Math.floor(Math.random() * 1000) + 1;
+                atualizarSaida(`O número sorteado na rifa foi: ${numeroSorteado}`);
+
+                if (numeroEscolhido === numeroSorteado) {
+                    saldoDinheiro += 500.0;
+                    ganhouRifa = true;
+                    atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!");
+                } else {
+                    atualizarSaida("Que pena! Não foi dessa vez. Você não ganhou na rifa.");
+                }
+            } else {
+                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer R$5,00).");
+                // Re-enable main menu buttons if action failed
+                submitButton.disabled = false; 
+                input.disabled = false;
+            }
+            verificarFimJogo();
+        }
+
+        async function gerenciarGarrafas() {
+            // Hide main menu buttons
+            mainMenuButtonsDiv.style.display = 'none';
+            input.style.display = 'none'; // Keep input hidden
+            submitButton.style.display = 'none'; // Keep submit hidden
+
+            const options = [
+                { text: 'Comprar Garrafas', value: '1' },
+                { text: 'Tentar Vender uma Garrafa', value: '2' },
+                { text: 'Voltar ao menu principal', value: '3', className: 'secondary' }
+            ];
+            let subEscolhaAgua = await customPrompt("ESCOLHA UMA OPÇÃO:", options);
+            subEscolhaAgua = parseInt(subEscolhaAgua); // Ensure it's a number
+
+            // After prompt, show main menu buttons again
+            mainMenuButtonsDiv.style.display = 'flex'; // Re-show main menu buttons
+
+
+            if (isNaN(subEscolhaAgua)) {
+                atualizarSaida("Escolha inválida! Por favor, selecione uma das opções.");
+                verificarFimJogo();
+                return;
+            }
+
+            if (subEscolhaAgua === 1) {
+                let precoCompraGarrafa = (Math.floor(Math.random() * (250 - 159 + 1)) + 159) / 100.0;
+                let garrafasComprar = parseInt(await customPrompt(`Quantas garrafas d'água você deseja comprar (R$${precoCompraGarrafa.toFixed(2)} cada)?`));
+
+                if (isNaN(garrafasComprar) || garrafasComprar <= 0) {
+                    atualizarSaida("Número inválido de garrafas para comprar.");
+                    verificarFimJogo();
+                    return;
+                }
+
+                let custoTotal = garrafasComprar * precoCompraGarrafa;
+                if (saldoDinheiro >= custoTotal) {
+                    saldoDinheiro -= custoTotal;
+                    quantidadeGarrafasAgua += garrafasComprar;
+                    atualizarSaida(`Você comprou ${garrafasComprar} garrafa(s) d'água. Seu saldo atual é R$${saldoDinheiro.toFixed(2)}.`);
+                } else {
+                    atualizarSaida(`Saldo insuficiente! Você precisa de R$${(custoTotal - saldoDinheiro).toFixed(2)} a mais para comprar ${garrafasComprar} garrafa(s).`);
+                }
+            } else if (subEscolhaAgua === 2) {
+                if (quantidadeGarrafasAgua > 0) {
+                    let chanceVenda = Math.floor(Math.random() * 100) + 1;
+                    if (chanceVenda <= 20) { // 20% chance to sell for R$5.00
+                        saldoDinheiro += 5.0;
+                        quantidadeGarrafasAgua -= 1;
+                        atualizarSaida("Sucesso! Alguém comprou a garrafa d'água por R$5,00!");
+                    } else {
+                        atualizarSaida("Ninguém quis comprar a água dessa vez. Você não vendeu a garrafa e ela continua com você.");
+                    }
+                } else {
+                    atualizarSaida("Você não tem garrafas d'água para vender! Compre algumas primeiro.");
+                }
+            } else if (subEscolhaAgua === 3) {
+                // Do nothing, just return to menu via verificarFimJogo
+            } else {
+                atualizarSaida("Escolha inválida! Por favor, selecione uma das opções.");
+            }
+            verificarFimJogo();
+        }
+
+        function verificarFimJogo() {
+            if (saldoDinheiro >= 500.0 || ganhouRifa) {
+                finalizarJogo();
+            } else if (saldoDinheiro < 5.0 && quantidadeGarrafasAgua === 0) {
+                finalizarJogo();
+            } else {
+                menuPrincipal(); // Always return to main menu if game isn't over
+            }
+        }
+
+        function finalizarJogo() {
+            submitButton.disabled = true; // Disable main submit button
+            input.disabled = true; // Disable main input
+            input.style.display = 'none'; // Hide input
+            submitButton.style.display = 'none'; // Hide submit button
+            mainMenuButtonsDiv.style.display = 'none'; // Hide main menu buttons
+
+            atualizarSaida("\n--- Fim do Jogo ---");
+            atualizarSaida(`Saldo Final: 💰 R$${saldoDinheiro.toFixed(2)}`);
+            if (saldoDinheiro >= 500.0) {
+                atualizarSaida("PARABÉNS! Você alcançou seu objetivo de R$500,00!");
+            } else if (ganhouRifa) {
+                atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!");
+            } else {
+                atualizarSaida("Que pena! Seu saldo ficou abaixo de R$5,00 e você não tem mais garrafas para vender. Você não tem mais capital para continuar.");
+            }
+            resetButton.style.display = 'block';
+        }
+
+        // The main submit button and input are now hidden by default and only shown when specific input is needed
+        // The main menu is driven by clicks on the new mainMenuButtonsDiv buttons.
+        // The original submitButton.addEventListener is no longer needed for main menu choices.
+
+        resetButton.addEventListener('click', () => {
+            saldoDinheiro = 5.0;
+            quantidadeGarrafasAgua = 0;
+            ganhouRifa = false;
+            output.innerHTML = '';
+            resetButton.style.display = 'none';
+            iniciarJogo();
+        });
+
+        window.onload = iniciarJogo;
+    </script>
+</body>
+</html>
