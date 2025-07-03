@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -523,7 +524,6 @@
         }
 
         function menuPrincipal() {
-           //atualizarSaida(`\n--- Saldo Atual: **R$${saldoDinheiro.toFixed(2)}** | Garrafas d'Água: **${quantidadeGarrafasAgua}/${MAX_GARRAFAS}** ---`);
            atualizarSaida(`\n💰 Saldo Atual: **R$${saldoDinheiro.toFixed(2)}** | 💧 Garrafas d'Água: **${quantidadeGarrafasAgua}/${MAX_GARRAFAS}**`);
             atualizarSaida("Escolha sua estratégia:");
             
@@ -724,6 +724,8 @@
 
             if (status === "ganhou") {
                 atualizarSaida("🏆 **PARABÉNS!** Você alcançou seu objetivo de **R$500,00**!", 'success');
+                // Adicionar a mensagem de print e Instagram aqui
+                atualizarSaida("🥳 **Conseguiu!** Que tal tirar um print da sua vitória e postar no Instagram? Não esqueça de me marcar: **@dan_bra** para eu repostar!", 'success');
             } else {
                 atualizarSaida("😢 **Que pena!** Seu saldo ficou abaixo de R$5,00 e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
             }
@@ -743,3 +745,4 @@
     </script>
 </body>
 </html>
+```
