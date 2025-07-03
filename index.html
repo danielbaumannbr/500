@@ -14,6 +14,8 @@
             --border-color: #0c0;
             --button-bg-hover: rgba(0, 255, 0, 0.3);
             --shadow-color: rgba(0, 255, 0, 0.5);
+            --success-color: #00BFFF; /* Blue for success */
+            --fail-color: #FF4500; /* Red for failure */
         }
 
         body {
@@ -71,6 +73,16 @@
 
         #output p {
             margin: 5px 0;
+        }
+
+        #output p.success-message {
+            color: var(--success-color);
+            text-shadow: 0 0 8px rgba(0, 191, 255, 0.7);
+        }
+
+        #output p.fail-message {
+            color: var(--fail-color);
+            text-shadow: 0 0 8px rgba(255, 69, 0, 0.7);
         }
 
         .input-group {
@@ -142,12 +154,26 @@
         /* Main Menu Buttons */
         #mainMenuButtons {
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Default to stack on small screens */
             gap: 15px;
             margin-top: 15px;
+            justify-content: center; /* Center buttons horizontally */
+            align-items: center; /* **This centers the items when they are stacked** */
         }
         #mainMenuButtons .action-button {
             max-width: 300px; /* Slightly wider buttons for main menu */
+        }
+
+        @media (min-width: 600px) { /* Arrange buttons side-by-side on larger screens */
+            #mainMenuButtons {
+                flex-direction: row; /* Row layout for larger screens */
+                flex-wrap: wrap; /* Allow wrapping if too many buttons */
+                align-items: flex-start; /* Align items to the start of the cross axis (top) */
+            }
+            #mainMenuButtons .action-button {
+                flex: 1 1 45%; /* Allow buttons to grow, max 45% width to fit two per row with gap */
+                margin: 5px; /* Adjust margin for row layout */
+            }
         }
 
 
@@ -318,8 +344,15 @@
         const resetButton = document.getElementById('reset');
         const mainMenuButtonsDiv = document.getElementById('mainMenuButtons'); // New div for main menu buttons
 
-        function atualizarSaida(mensagem) {
-            output.innerHTML += `<p>${mensagem}</p>`;
+        function atualizarSaida(mensagem, type = 'normal') {
+            const p = document.createElement('p');
+            p.textContent = mensagem;
+            if (type === 'success') {
+                p.classList.add('success-message');
+            } else if (type === 'fail') {
+                p.classList.add('fail-message');
+            }
+            output.appendChild(p);
             output.scrollTop = output.scrollHeight;
         }
 
@@ -365,6 +398,7 @@
                     promptOkButton.addEventListener('click', submitAndResolve);
                     promptInput.addEventListener('keypress', (event) => {
                         if (event.key === 'Enter') {
+                            event.preventDefault(); // Prevent default Enter key behavior (like form submission)
                             submitAndResolve();
                         }
                     });
@@ -391,7 +425,8 @@
             
             // Clear existing main menu buttons
             mainMenuButtonsDiv.innerHTML = '';
-            
+            mainMenuButtonsDiv.style.display = 'flex'; // Ensure it's visible
+
             // Hide input and submit button for main menu
             input.style.display = 'none';
             submitButton.style.display = 'none';
@@ -401,9 +436,10 @@
             raffleButton.className = 'action-button';
             raffleButton.textContent = '🎲 Jogar na rifa (Custo: R$5,00 - Prêmio: R$500,00)';
             raffleButton.addEventListener('click', async () => {
-                submitButton.disabled = true; // Disable buttons during action
-                input.disabled = true;
+                // Disable main menu buttons temporarily
+                Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
                 await jogarRifa();
+                Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = false); // Re-enable
             });
             mainMenuButtonsDiv.appendChild(raffleButton);
 
@@ -411,9 +447,10 @@
             manageBottlesButton.className = 'action-button';
             manageBottlesButton.textContent = "💧 Gerenciar Garrafas d'Água (Comprar/Vender)";
             manageBottlesButton.addEventListener('click', async () => {
-                submitButton.disabled = true; // Disable buttons during action
-                input.disabled = true;
+                // Disable main menu buttons temporarily
+                Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
                 await gerenciarGarrafas();
+                Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = false); // Re-enable
             });
             mainMenuButtonsDiv.appendChild(manageBottlesButton);
 
@@ -421,10 +458,8 @@
         }
 
         async function jogarRifa() {
-            // Hide main menu buttons
+            // Hide main menu buttons before showing prompt
             mainMenuButtonsDiv.style.display = 'none';
-            input.style.display = 'block'; // Show input for raffle number
-            submitButton.style.display = 'block'; // Show submit button for raffle number
 
             if (saldoDinheiro >= 5.0) {
                 saldoDinheiro -= 5.0;
@@ -432,14 +467,8 @@
                 let numeroEscolhido = await customPrompt("Escolha um número para a rifa (entre 1 e 1000):");
                 numeroEscolhido = parseInt(numeroEscolhido); // Ensure it's a number
 
-                // After prompt, hide input and submit, show main menu buttons
-                input.style.display = 'none';
-                submitButton.style.display = 'none';
-                mainMenuButtonsDiv.style.display = 'flex'; // Re-show main menu buttons
-
-
                 if (isNaN(numeroEscolhido) || numeroEscolhido < 1 || numeroEscolhido > 1000) {
-                    atualizarSaida("Número inválido! Por favor, escolha um número entre 1 e 1000.");
+                    atualizarSaida("Número inválido! Por favor, escolha um número entre 1 e 1000.", 'fail');
                     saldoDinheiro += 5.0; // Refund if input is invalid
                     verificarFimJogo(); // Go back to menu or end game
                     return;
@@ -451,24 +480,19 @@
                 if (numeroEscolhido === numeroSorteado) {
                     saldoDinheiro += 500.0;
                     ganhouRifa = true;
-                    atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!");
+                    atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!", 'success');
                 } else {
-                    atualizarSaida("Que pena! Não foi dessa vez. Você não ganhou na rifa.");
+                    atualizarSaida("Que pena! Não foi dessa vez. Você não ganhou na rifa.", 'fail');
                 }
             } else {
-                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer R$5,00).");
-                // Re-enable main menu buttons if action failed
-                submitButton.disabled = false; 
-                input.disabled = false;
+                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer R$5,00).", 'fail');
             }
             verificarFimJogo();
         }
 
         async function gerenciarGarrafas() {
-            // Hide main menu buttons
+            // Hide main menu buttons before showing prompt
             mainMenuButtonsDiv.style.display = 'none';
-            input.style.display = 'none'; // Keep input hidden
-            submitButton.style.display = 'none'; // Keep submit hidden
 
             const options = [
                 { text: 'Comprar Garrafas', value: '1' },
@@ -478,22 +502,18 @@
             let subEscolhaAgua = await customPrompt("ESCOLHA UMA OPÇÃO:", options);
             subEscolhaAgua = parseInt(subEscolhaAgua); // Ensure it's a number
 
-            // After prompt, show main menu buttons again
-            mainMenuButtonsDiv.style.display = 'flex'; // Re-show main menu buttons
-
-
             if (isNaN(subEscolhaAgua)) {
-                atualizarSaida("Escolha inválida! Por favor, selecione uma das opções.");
+                atualizarSaida("Escolha inválida! Por favor, selecione uma das opções.", 'fail');
                 verificarFimJogo();
                 return;
             }
 
             if (subEscolhaAgua === 1) {
                 let precoCompraGarrafa = (Math.floor(Math.random() * (250 - 159 + 1)) + 159) / 100.0;
-                let garrafasComprar = parseInt(await customPrompt(`Quantas garrafas d'água você deseja comprar (R$${precoCompraGarrafa.toFixed(2)} cada)?`));
+                let garrafasComprar = parseInt(await customPrompt(`Seu saldo atual: R$${saldoDinheiro.toFixed(2)}\nQuantas garrafas d'água você deseja comprar (R$${precoCompraGarrafa.toFixed(2)} cada)?`));
 
                 if (isNaN(garrafasComprar) || garrafasComprar <= 0) {
-                    atualizarSaida("Número inválido de garrafas para comprar.");
+                    atualizarSaida("Número inválido de garrafas para comprar.", 'fail');
                     verificarFimJogo();
                     return;
                 }
@@ -502,9 +522,9 @@
                 if (saldoDinheiro >= custoTotal) {
                     saldoDinheiro -= custoTotal;
                     quantidadeGarrafasAgua += garrafasComprar;
-                    atualizarSaida(`Você comprou ${garrafasComprar} garrafa(s) d'água. Seu saldo atual é R$${saldoDinheiro.toFixed(2)}.`);
+                    atualizarSaida(`Você comprou ${garrafasComprar} garrafa(s) d'água. Seu saldo atual é R$${saldoDinheiro.toFixed(2)}.`, 'success');
                 } else {
-                    atualizarSaida(`Saldo insuficiente! Você precisa de R$${(custoTotal - saldoDinheiro).toFixed(2)} a mais para comprar ${garrafasComprar} garrafa(s).`);
+                    atualizarSaida(`Saldo insuficiente! Você precisa de R$${(custoTotal - saldoDinheiro).toFixed(2)} a mais para comprar ${garrafasComprar} garrafa(s).`, 'fail');
                 }
             } else if (subEscolhaAgua === 2) {
                 if (quantidadeGarrafasAgua > 0) {
@@ -512,17 +532,17 @@
                     if (chanceVenda <= 20) { // 20% chance to sell for R$5.00
                         saldoDinheiro += 5.0;
                         quantidadeGarrafasAgua -= 1;
-                        atualizarSaida("Sucesso! Alguém comprou a garrafa d'água por R$5,00!");
+                        atualizarSaida("Sucesso! Alguém comprou a garrafa d'água por R$5,00!", 'success');
                     } else {
-                        atualizarSaida("Ninguém quis comprar a água dessa vez. Você não vendeu a garrafa e ela continua com você.");
+                        atualizarSaida("Ninguém quis comprar a água dessa vez. Você não vendeu a garrafa e ela continua com você.", 'fail');
                     }
                 } else {
-                    atualizarSaida("Você não tem garrafas d'água para vender! Compre algumas primeiro.");
+                    atualizarSaida("Você não tem garrafas d'água para vender! Compre algumas primeiro.", 'fail');
                 }
             } else if (subEscolhaAgua === 3) {
                 // Do nothing, just return to menu via verificarFimJogo
             } else {
-                atualizarSaida("Escolha inválida! Por favor, selecione uma das opções.");
+                atualizarSaida("Escolha inválida! Por favor, selecione uma das opções.", 'fail');
             }
             verificarFimJogo();
         }
@@ -547,18 +567,14 @@
             atualizarSaida("\n--- Fim do Jogo ---");
             atualizarSaida(`Saldo Final: 💰 R$${saldoDinheiro.toFixed(2)}`);
             if (saldoDinheiro >= 500.0) {
-                atualizarSaida("PARABÉNS! Você alcançou seu objetivo de R$500,00!");
+                atualizarSaida("PARABÉNS! Você alcançou seu objetivo de R$500,00!", 'success');
             } else if (ganhouRifa) {
-                atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!");
+                atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!", 'success');
             } else {
-                atualizarSaida("Que pena! Seu saldo ficou abaixo de R$5,00 e você não tem mais garrafas para vender. Você não tem mais capital para continuar.");
+                atualizarSaida("Que pena! Seu saldo ficou abaixo de R$5,00 e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
             }
             resetButton.style.display = 'block';
         }
-
-        // The main submit button and input are now hidden by default and only shown when specific input is needed
-        // The main menu is driven by clicks on the new mainMenuButtonsDiv buttons.
-        // The original submitButton.addEventListener is no longer needed for main menu choices.
 
         resetButton.addEventListener('click', () => {
             saldoDinheiro = 5.0;
