@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jogo de Rifa e Garrafas d'Água</title>
+    <title>Quem Chega aos 500 Primeiro</title>
     <style>
         :root {
             --primary-green: #0f0;
@@ -259,12 +259,12 @@
             cursor: pointer;
             transition: background 0.3s ease, transform 0.2s ease;
             box-shadow: 0 0 10px rgba(0,255,0,0.5);
-            width: 80%; /* Make buttons wider */
+            width: 80%;
             max-width: 250px;
         }
 
         .custom-prompt button.secondary {
-            background-color: #555; /* A different color for secondary actions */
+            background-color: #555;
             box-shadow: none;
         }
         .custom-prompt button.secondary:hover {
@@ -289,11 +289,11 @@
             font-size: clamp(14px, 2.5vw, 18px);
             border: 1px solid var(--border-color);
             box-shadow: 0 0 10px rgba(0,255,0,0.4);
-            z-index: 1001; /* Ensure it's above other elements if needed */
+            z-index: 1001;
         }
 
 
-        @media (min-width: 500px) { /* Arrange buttons horizontally on larger screens */
+        @media (min-width: 500px) {
             .custom-prompt .button-group {
                 flex-direction: row;
                 justify-content: center;
@@ -354,7 +354,7 @@
 <body>
     <div id="gameTimer">00:00:00</div>
     <div class="container">
-        <h1>Jogo de Rifa e Garrafas d'Água</h1>
+        <h1>Quem Chega aos 500 Primeiro</h1>
         <div id="output"></div>
         <div id="mainMenuButtons"></div> 
 
@@ -366,13 +366,53 @@
         let saldoDinheiro = 5.0;
         let quantidadeGarrafasAgua = 0;
         let ganhouRifa = false;
+        let finalTime = "00:00:00"; // Variável para armazenar o tempo final
+        const MAX_GARRAFAS = 12; // Define o limite máximo de garrafas
+
+        // Lista de desculpas engraçadas
+        const funnyExcuses = [
+            "Ah, eu acabei de tomar um banho de chuva, estou hidratado por osmose!",
+            "Meu cachorro comeu meu dinheiro da água. De novo.",
+            "Estou em uma dieta de ar. Água estraga o plano.",
+            "Prefiro água diretamente da nuvem, é mais fresca.",
+            "Acabei de regar minhas plantas e bebi o que sobrou. Elas não se importam.",
+            "Tenho que guardar meu dinheiro para a mensalidade do clube de caça-níqueis submarino.",
+            "Minha avó disse que água demais enferruja as articulações.",
+            "Estou economizando para um jet ski. Água potável é um luxo desnecessário.",
+            "Ouvir a água me faz ter vontade de ir ao banheiro, e não posso agora.",
+            "Minha alma já está úmida. Obrigado!",
+            "Acabei de gargarejar com um gole de café, é praticamente a mesma coisa.",
+            "Estou tentando me tornar um camelo. Preciso treinar a sede.",
+            "Meu horóscopo disse para evitar líquidos hoje. Questão de destino.",
+            "Tenho alergia a H2O... só consigo beber C2H5OH.",
+            "Estou esperando o dia em que a água seja saborizada com gosto de pizza.",
+            "Não posso, estou em uma competição de quem fica mais tempo sem piscar... e sem beber.",
+            "Se eu beber água agora, vou perder o dom de adivinhar o tempo olhando para as nuvens.",
+            "Desculpe, estou em processo de desidratação artística. É uma nova tendência.",
+            "Minha bexiga acabou de me mandar um ultimato. Não posso arriscar.",
+            "Estou testando uma nova tecnologia que me permite absorver umidade do ar.",
+            "Já bebi o suficiente para hoje. O suficiente para duas pessoas, na verdade.",
+            "Meu terapeuta disse para eu evitar compromissos com líquidos.",
+            "Estou treinando para ser um mímico. Não posso falar, muito menos beber.",
+            "A última vez que bebi água, comecei a flutuar. É um risco que não posso correr.",
+            "Hoje é meu dia de 'ficar seco'. Amanhã eu volto ao normal, prometo!"
+        ];
+
+        // Elogios para quando vende água
+        const compliments = [
+            "Excelente jogada! Seu faro para negócios é impressionante. ✨",
+            "Uau, que empreendedorismo! Você tem o toque de Midas! 💪",
+            "Parabéns pela venda! É assim que se constrói um império. ✨",
+            "Mandou bem! Sua persistência está dando frutos. 💪",
+            "Isso aí! Foco e determinação, continue assim! ✨"
+        ];
 
         const output = document.getElementById('output');
         const input = document.getElementById('input');
         const submitButton = document.getElementById('submit');
         const resetButton = document.getElementById('reset');
-        const mainMenuButtonsDiv = document.getElementById('mainMenuButtons'); // New div for main menu buttons
-        const gameTimerElement = document.getElementById('gameTimer'); // Elemento do timer
+        const mainMenuButtonsDiv = document.getElementById('mainMenuButtons'); 
+        const gameTimerElement = document.getElementById('gameTimer'); 
         
         let startTime;
         let timerInterval;
@@ -384,6 +424,7 @@
 
         function stopTimer() {
             clearInterval(timerInterval);
+            finalTime = gameTimerElement.textContent; // Armazena o tempo final
         }
 
         function resetTimer() {
@@ -476,13 +517,14 @@
 
         function iniciarJogo() {
             resetTimer(); // Inicia o timer ao iniciar o jogo
-            atualizarSaida("Bem-vindo ao Jogo de Rifa e Garrafas d'Água! Seu objetivo é transformar seus R$5,00 iniciais em R$500,00.");
+            atualizarSaida("Bem-vindo ao Jogo **Quem Chega aos 500 Primeiro**! Seu objetivo é transformar seus R$5,00 iniciais em R$500,00.");
             atualizarSaida("Você encontrou R$5,00 no bolso do casaco! O que você vai fazer com eles?");
             menuPrincipal();
         }
 
         function menuPrincipal() {
-            atualizarSaida(`\n--- Saldo Atual: R$${saldoDinheiro.toFixed(2)} | Garrafas d'Água: ${quantidadeGarrafasAgua} ---`);
+           //atualizarSaida(`\n--- Saldo Atual: **R$${saldoDinheiro.toFixed(2)}** | Garrafas d'Água: **${quantidadeGarrafasAgua}/${MAX_GARRAFAS}** ---`);
+           atualizarSaida(`\n💰 Saldo Atual: **R$${saldoDinheiro.toFixed(2)}** | 💧 Garrafas d'Água: **${quantidadeGarrafasAgua}/${MAX_GARRAFAS}**`);
             atualizarSaida("Escolha sua estratégia:");
             
             // Clear existing main menu buttons
@@ -547,7 +589,7 @@
             }
 
             saldoDinheiro -= custoTotalRifas;
-            atualizarSaida(`Você comprou ${quantidadeRifas} bilhete(s) de rifa, gastando R$${custoTotalRifas.toFixed(2)}.`);
+            atualizarSaida(`Você comprou **${quantidadeRifas}** bilhete(s) de rifa, gastando **R$${custoTotalRifas.toFixed(2)}**.`);
 
             let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
             let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
@@ -555,9 +597,9 @@
             // Limit the chosen numbers to the quantity of bought tickets
             if (numerosEscolhidos.length > quantidadeRifas) {
                 numerosEscolhidos = numerosEscolhidos.slice(0, quantidadeRifas);
-                atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros ${quantidadeRifas} números serão considerados: ${numerosEscolhidos.join(', ')}`);
+                atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros **${quantidadeRifas}** números serão considerados: **${numerosEscolhidos.join(', ')}**`);
             } else if (numerosEscolhidos.length < quantidadeRifas) {
-                atualizarSaida(`Você inseriu menos números do que rifas compradas. Seus números: ${numerosEscolhidos.join(', ')}`);
+                atualizarSaida(`Você inseriu menos números do que rifas compradas. Seus números: **${numerosEscolhidos.join(', ')}**`);
             }
             
             if (numerosEscolhidos.length === 0) {
@@ -567,10 +609,10 @@
                 return;
             }
 
-            atualizarSaida(`Seus números escolhidos para o sorteio: ${numerosEscolhidos.join(', ')}`);
+            atualizarSaida(`Seus números escolhidos para o sorteio: **${numerosEscolhidos.join(', ')}**`);
 
             let numeroSorteado = Math.floor(Math.random() * 1000) + 1; // Apenas um número é sorteado
-            atualizarSaida(`O número sorteado na rifa foi: ${numeroSorteado}`);
+            atualizarSaida(`O número sorteado na rifa foi: **${numeroSorteado}**`);
 
             let acertou = false;
             for (let i = 0; i < numerosEscolhidos.length; i++) {
@@ -583,9 +625,9 @@
             if (acertou) {
                 saldoDinheiro += 500.0; // Ganha R$500 apenas uma vez se acertar
                 ganhouRifa = true;
-                atualizarSaida(`PARABÉNS! Um dos seus números (${numeroSorteado}) foi sorteado na rifa e você ganhou R$500,00!`, 'success');
+                atualizarSaida(`🎉 **PARABÉNS!** Um dos seus números (**${numeroSorteado}**) foi sorteado na rifa e você ganhou **R$500,00**!`, 'success');
             } else {
-                atualizarSaida("Que pena! Nenhum dos seus números foi sorteado na rifa.", 'fail');
+                atualizarSaida("😥 Que pena! Nenhum dos seus números foi sorteado na rifa.", 'fail');
             }
             verificarFimJogo();
         }
@@ -618,13 +660,20 @@
                     return;
                 }
 
+                // Verifica o limite de garrafas
+                if (quantidadeGarrafasAgua + garrafasComprar > MAX_GARRAFAS) {
+                    atualizarSaida(`Você só consegue carregar no máximo **${MAX_GARRAFAS}** garrafas d'água por vez!`, 'fail');
+                    verificarFimJogo();
+                    return;
+                }
+
                 let custoTotal = garrafasComprar * precoCompraGarrafa;
                 if (saldoDinheiro >= custoTotal) {
                     saldoDinheiro -= custoTotal;
                     quantidadeGarrafasAgua += garrafasComprar;
-                    atualizarSaida(`Você comprou ${garrafasComprar} garrafa(s) d'água. Seu saldo atual é R$${saldoDinheiro.toFixed(2)}.`, 'success');
+                    atualizarSaida(`Você comprou **${garrafasComprar}** garrafa(s) d'água. Seu saldo atual é **R$${saldoDinheiro.toFixed(2)}**.`, 'success');
                 } else {
-                    atualizarSaida(`Saldo insuficiente! Você precisa de R$${(custoTotal - saldoDinheiro).toFixed(2)} a mais para comprar ${garrafasComprar} garrafa(s).`, 'fail');
+                    atualizarSaida(`Saldo insuficiente! Você precisa de **R$${(custoTotal - saldoDinheiro).toFixed(2)}** a mais para comprar ${garrafasComprar} garrafa(s).`, 'fail');
                 }
             } else if (subEscolhaAgua === 2) {
                 if (quantidadeGarrafasAgua > 0) {
@@ -632,9 +681,13 @@
                     if (chanceVenda <= 20) { // 20% chance to sell for R$5.00
                         saldoDinheiro += 5.0;
                         quantidadeGarrafasAgua -= 1;
-                        atualizarSaida("Sucesso! Alguém comprou a garrafa d'água por R$5,00!", 'success');
+                        const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
+                        atualizarSaida(`✅ ${randomCompliment}`, 'success');
                     } else {
-                        atualizarSaida("Ninguém quis comprar a água dessa vez. Você não vendeu a garrafa e ela continua com você.", 'fail');
+                        // Sorteia uma desculpa engraçada
+                        const randomIndex = Math.floor(Math.random() * funnyExcuses.length);
+                        const randomExcuse = funnyExcuses[randomIndex];
+                        atualizarSaida(`🗣️ "${randomExcuse}" A garrafa continua com você.`, 'fail');
                     }
                 } else {
                     atualizarSaida("Você não tem garrafas d'água para vender! Compre algumas primeiro.", 'fail');
@@ -649,15 +702,15 @@
 
         function verificarFimJogo() {
             if (saldoDinheiro >= 500.0 || ganhouRifa) {
-                finalizarJogo();
+                finalizarJogo("ganhou");
             } else if (saldoDinheiro < 5.0 && quantidadeGarrafasAgua === 0) {
-                finalizarJogo();
+                finalizarJogo("perdeu");
             } else {
                 menuPrincipal(); // Always return to main menu if game isn't over
             }
         }
 
-        function finalizarJogo() {
+        function finalizarJogo(status) {
             stopTimer(); // Para o timer ao finalizar o jogo
             submitButton.disabled = true; // Disable main submit button
             input.disabled = true; // Disable main input
@@ -666,13 +719,13 @@
             mainMenuButtonsDiv.style.display = 'none'; // Hide main menu buttons
 
             atualizarSaida("\n--- Fim do Jogo ---");
-            atualizarSaida(`Saldo Final: 💰 R$${saldoDinheiro.toFixed(2)}`);
-            if (saldoDinheiro >= 500.0) {
-                atualizarSaida("PARABÉNS! Você alcançou seu objetivo de R$500,00!", 'success');
-            } else if (ganhouRifa) {
-                atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!", 'success');
+            atualizarSaida(`Tempo de Jogo: ⏱️ **${finalTime}**`);
+            atualizarSaida(`Saldo Final: 💰 **R$${saldoDinheiro.toFixed(2)}**`);
+
+            if (status === "ganhou") {
+                atualizarSaida("🏆 **PARABÉNS!** Você alcançou seu objetivo de **R$500,00**!", 'success');
             } else {
-                atualizarSaida("Que pena! Seu saldo ficou abaixo de R$5,00 e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
+                atualizarSaida("😢 **Que pena!** Seu saldo ficou abaixo de R$5,00 e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
             }
             resetButton.style.display = 'block';
         }
