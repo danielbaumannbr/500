@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -518,13 +517,13 @@
 
         function iniciarJogo() {
             resetTimer(); // Inicia o timer ao iniciar o jogo
-            atualizarSaida("Bem-vindo ao Jogo **Quem Chega aos 500 Primeiro**! Seu objetivo é transformar seus R$5,00 iniciais em R$500,00.");
-            atualizarSaida("Você encontrou R$5,00 no bolso do casaco! O que você vai fazer com eles?");
+            atualizarSaida("Bem-vindo ao Jogo **Quem Chega aos 500 Primeiro**! Seu objetivo é transformar seus **5 Kredits** iniciais em **500 Kredits**.");
+            atualizarSaida("Você encontrou **5 Kredits** no bolso do casaco! O que você vai fazer com eles?");
             menuPrincipal();
         }
 
         function menuPrincipal() {
-           atualizarSaida(`\n💰 Saldo Atual: **R$${saldoDinheiro.toFixed(2)}** | 💧 Garrafas d'Água: **${quantidadeGarrafasAgua}/${MAX_GARRAFAS}**`);
+           atualizarSaida(`\n💰 Saldo Atual: **${saldoDinheiro.toFixed(2)} K** | 💧 Garrafas d'Água: **${quantidadeGarrafasAgua}/${MAX_GARRAFAS}**`);
             atualizarSaida("Escolha sua estratégia:");
             
             // Clear existing main menu buttons
@@ -538,7 +537,7 @@
             // Create and append main menu buttons
             const raffleButton = document.createElement('button');
             raffleButton.className = 'action-button';
-            raffleButton.textContent = '🎲 Jogar na rifa (Custo: R$5,00 por bilhete - Prêmio: R$500,00)';
+            raffleButton.textContent = '🎲 Jogar na rifa (Custo: 5 Kredits por bilhete - Prêmio: 500 Kredits)';
             raffleButton.addEventListener('click', async () => {
                 // Disable main menu buttons temporarily
                 Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
@@ -566,12 +565,12 @@
             mainMenuButtonsDiv.style.display = 'none';
 
             if (saldoDinheiro < 5.0) {
-                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer no mínimo R$5,00).", 'fail');
+                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer no mínimo **5 Kredits**).", 'fail');
                 verificarFimJogo();
                 return;
             }
 
-            let quantidadeRifasStr = await customPrompt(`Seu saldo atual: R$${saldoDinheiro.toFixed(2)}\nQuantas rifas você deseja comprar (R$5,00 cada)?`);
+            let quantidadeRifasStr = await customPrompt(`Seu saldo atual: ${saldoDinheiro.toFixed(2)} K\nQuantas rifas você deseja comprar (5 Kredits cada)?`);
             let quantidadeRifas = parseInt(quantidadeRifasStr);
 
             if (isNaN(quantidadeRifas) || quantidadeRifas <= 0) {
@@ -583,13 +582,13 @@
             const custoTotalRifas = quantidadeRifas * 5.0;
 
             if (saldoDinheiro < custoTotalRifas) {
-                atualizarSaida(`Saldo insuficiente! Você precisa de R$${(custoTotalRifas - saldoDinheiro).toFixed(2)} a mais para comprar ${quantidadeRifas} rifa(s).`, 'fail');
+                atualizarSaida(`Saldo insuficiente! Você precisa de **${(custoTotalRifas - saldoDinheiro).toFixed(2)} K** a mais para comprar ${quantidadeRifas} rifa(s).`, 'fail');
                 verificarFimJogo();
                 return;
             }
 
             saldoDinheiro -= custoTotalRifas;
-            atualizarSaida(`Você comprou **${quantidadeRifas}** bilhete(s) de rifa, gastando **R$${custoTotalRifas.toFixed(2)}**.`);
+            atualizarSaida(`Você comprou **${quantidadeRifas}** bilhete(s) de rifa, gastando **${custoTotalRifas.toFixed(2)} K**.`);
 
             let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
             let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
@@ -623,9 +622,9 @@
             }
 
             if (acertou) {
-                saldoDinheiro += 500.0; // Ganha R$500 apenas uma vez se acertar
+                saldoDinheiro += 500.0; // Ganha 500 Kredits apenas uma vez se acertar
                 ganhouRifa = true;
-                atualizarSaida(`🎉 **PARABÉNS!** Um dos seus números (**${numeroSorteado}**) foi sorteado na rifa e você ganhou **R$500,00**!`, 'success');
+                atualizarSaida(`🎉 **PARABÉNS!** Um dos seus números (**${numeroSorteado}**) foi sorteado na rifa e você ganhou **500 Kredits**!`, 'success');
             } else {
                 atualizarSaida("😥 Que pena! Nenhum dos seus números foi sorteado na rifa.", 'fail');
             }
@@ -652,7 +651,7 @@
 
             if (subEscolhaAgua === 1) {
                 let precoCompraGarrafa = (Math.floor(Math.random() * (250 - 159 + 1)) + 159) / 100.0;
-                let garrafasComprar = parseInt(await customPrompt(`Seu saldo atual: R$${saldoDinheiro.toFixed(2)}\nQuantas garrafas d'água você deseja comprar (R$${precoCompraGarrafa.toFixed(2)} cada)?`));
+                let garrafasComprar = parseInt(await customPrompt(`Seu saldo atual: ${saldoDinheiro.toFixed(2)} K\nQuantas garrafas d'água você deseja comprar (${precoCompraGarrafa.toFixed(2)} K cada)?`));
 
                 if (isNaN(garrafasComprar) || garrafasComprar <= 0) {
                     atualizarSaida("Número inválido de garrafas para comprar.", 'fail');
@@ -671,14 +670,14 @@
                 if (saldoDinheiro >= custoTotal) {
                     saldoDinheiro -= custoTotal;
                     quantidadeGarrafasAgua += garrafasComprar;
-                    atualizarSaida(`Você comprou **${garrafasComprar}** garrafa(s) d'água. Seu saldo atual é **R$${saldoDinheiro.toFixed(2)}**.`, 'success');
+                    atualizarSaida(`Você comprou **${garrafasComprar}** garrafa(s) d'água. Seu saldo atual é **${saldoDinheiro.toFixed(2)} K**.`, 'success');
                 } else {
-                    atualizarSaida(`Saldo insuficiente! Você precisa de **R$${(custoTotal - saldoDinheiro).toFixed(2)}** a mais para comprar ${garrafasComprar} garrafa(s).`, 'fail');
+                    atualizarSaida(`Saldo insuficiente! Você precisa de **${(custoTotal - saldoDinheiro).toFixed(2)} K** a mais para comprar ${garrafasComprar} garrafa(s).`, 'fail');
                 }
             } else if (subEscolhaAgua === 2) {
                 if (quantidadeGarrafasAgua > 0) {
                     let chanceVenda = Math.floor(Math.random() * 100) + 1;
-                    if (chanceVenda <= 20) { // 20% chance to sell for R$5.00
+                    if (chanceVenda <= 20) { // 20% chance to sell for 5.00 K
                         saldoDinheiro += 5.0;
                         quantidadeGarrafasAgua -= 1;
                         const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
@@ -720,14 +719,14 @@
 
             atualizarSaida("\n--- Fim do Jogo ---");
             atualizarSaida(`Tempo de Jogo: ⏱️ **${finalTime}**`);
-            atualizarSaida(`Saldo Final: 💰 **R$${saldoDinheiro.toFixed(2)}**`);
+            atualizarSaida(`Saldo Final: 💰 **${saldoDinheiro.toFixed(2)} K**`);
 
             if (status === "ganhou") {
-                atualizarSaida("🏆 **PARABÉNS!** Você alcançou seu objetivo de **R$500,00**!", 'success');
+                atualizarSaida("🏆 **PARABÉNS!** Você alcançou seu objetivo de **500 Kredits**!", 'success');
                 // Adicionar a mensagem de print e Instagram aqui
                 atualizarSaida("🥳 **Conseguiu!** Que tal tirar um print da sua vitória e postar no Instagram? Não esqueça de me marcar: **@dan_bra** para eu repostar!", 'success');
             } else {
-                atualizarSaida("😢 **Que pena!** Seu saldo ficou abaixo de R$5,00 e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
+                atualizarSaida("😢 **Que pena!** Seu saldo ficou abaixo de **5 Kredits** e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
             }
             resetButton.style.display = 'block';
         }
@@ -745,4 +744,3 @@
     </script>
 </body>
 </html>
-```
