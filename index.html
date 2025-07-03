@@ -29,6 +29,7 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            position: relative; /* Necessário para posicionar o timer */
         }
 
         .container {
@@ -204,6 +205,12 @@
             font-family: 'Arial', sans-serif, 'Courier New', monospace;
             box-shadow: 0 0 25px var(--shadow-color);
             animation: fadeIn 0.3s ease-out;
+            /* Centralização Adicionada */
+            position: fixed; /* Garante que fique sobre a tela e não em relação ao container pai */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Centraliza o elemento exatamente no meio */
+            margin: 0; /* Remove qualquer margem que possa interferir */
         }
 
         @keyframes fadeIn {
@@ -269,6 +276,23 @@
             transform: translateY(-2px);
         }
 
+        /* Timer Styling */
+        #gameTimer {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--primary-green);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(14px, 2.5vw, 18px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 10px rgba(0,255,0,0.4);
+            z-index: 1001; /* Ensure it's above other elements if needed */
+        }
+
+
         @media (min-width: 500px) { /* Arrange buttons horizontally on larger screens */
             .custom-prompt .button-group {
                 flex-direction: row;
@@ -320,10 +344,15 @@
                 font-size: clamp(14px, 4vw, 18px);
                 padding: 10px 25px;
             }
+            #gameTimer {
+                font-size: clamp(12px, 3vw, 16px);
+                padding: 5px 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <div id="gameTimer">00:00:00</div>
     <div class="container">
         <h1>Jogo de Rifa e Garrafas d'Água</h1>
         <div id="output"></div>
@@ -343,6 +372,37 @@
         const submitButton = document.getElementById('submit');
         const resetButton = document.getElementById('reset');
         const mainMenuButtonsDiv = document.getElementById('mainMenuButtons'); // New div for main menu buttons
+        const gameTimerElement = document.getElementById('gameTimer'); // Elemento do timer
+        
+        let startTime;
+        let timerInterval;
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            stopTimer();
+            gameTimerElement.textContent = '00:00:00';
+            startTimer();
+        }
+
+        function updateTimer() {
+            const elapsedTime = Date.now() - startTime;
+            const totalSeconds = Math.floor(elapsedTime / 1000);
+
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            const format = (num) => num < 10 ? '0' + num : num;
+            gameTimerElement.textContent = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+        }
 
         function atualizarSaida(mensagem, type = 'normal') {
             const p = document.createElement('p');
@@ -415,6 +475,8 @@
         }
 
         function iniciarJogo() {
+            resetTimer(); // Inicia o timer ao iniciar o jogo
+            atualizarSaida("Bem-vindo ao Jogo de Rifa e Garrafas d'Água! Seu objetivo é transformar seus R$5,00 iniciais em R$500,00.");
             atualizarSaida("Você encontrou R$5,00 no bolso do casaco! O que você vai fazer com eles?");
             menuPrincipal();
         }
@@ -434,7 +496,7 @@
             // Create and append main menu buttons
             const raffleButton = document.createElement('button');
             raffleButton.className = 'action-button';
-            raffleButton.textContent = '🎲 Jogar na rifa (Custo: R$5,00 - Prêmio: R$500,00)';
+            raffleButton.textContent = '🎲 Jogar na rifa (Custo: R$5,00 por bilhete - Prêmio: R$500,00)';
             raffleButton.addEventListener('click', async () => {
                 // Disable main menu buttons temporarily
                 Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
@@ -461,31 +523,69 @@
             // Hide main menu buttons before showing prompt
             mainMenuButtonsDiv.style.display = 'none';
 
-            if (saldoDinheiro >= 5.0) {
-                saldoDinheiro -= 5.0;
-                atualizarSaida("\nVocê gastou R$5,00 na rifa.");
-                let numeroEscolhido = await customPrompt("Escolha um número para a rifa (entre 1 e 1000):");
-                numeroEscolhido = parseInt(numeroEscolhido); // Ensure it's a number
+            if (saldoDinheiro < 5.0) {
+                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer no mínimo R$5,00).", 'fail');
+                verificarFimJogo();
+                return;
+            }
 
-                if (isNaN(numeroEscolhido) || numeroEscolhido < 1 || numeroEscolhido > 1000) {
-                    atualizarSaida("Número inválido! Por favor, escolha um número entre 1 e 1000.", 'fail');
-                    saldoDinheiro += 5.0; // Refund if input is invalid
-                    verificarFimJogo(); // Go back to menu or end game
-                    return;
+            let quantidadeRifasStr = await customPrompt(`Seu saldo atual: R$${saldoDinheiro.toFixed(2)}\nQuantas rifas você deseja comprar (R$5,00 cada)?`);
+            let quantidadeRifas = parseInt(quantidadeRifasStr);
+
+            if (isNaN(quantidadeRifas) || quantidadeRifas <= 0) {
+                atualizarSaida("Quantidade inválida de rifas.", 'fail');
+                verificarFimJogo();
+                return;
+            }
+
+            const custoTotalRifas = quantidadeRifas * 5.0;
+
+            if (saldoDinheiro < custoTotalRifas) {
+                atualizarSaida(`Saldo insuficiente! Você precisa de R$${(custoTotalRifas - saldoDinheiro).toFixed(2)} a mais para comprar ${quantidadeRifas} rifa(s).`, 'fail');
+                verificarFimJogo();
+                return;
+            }
+
+            saldoDinheiro -= custoTotalRifas;
+            atualizarSaida(`Você comprou ${quantidadeRifas} bilhete(s) de rifa, gastando R$${custoTotalRifas.toFixed(2)}.`);
+
+            let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
+            let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
+            
+            // Limit the chosen numbers to the quantity of bought tickets
+            if (numerosEscolhidos.length > quantidadeRifas) {
+                numerosEscolhidos = numerosEscolhidos.slice(0, quantidadeRifas);
+                atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros ${quantidadeRifas} números serão considerados: ${numerosEscolhidos.join(', ')}`);
+            } else if (numerosEscolhidos.length < quantidadeRifas) {
+                atualizarSaida(`Você inseriu menos números do que rifas compradas. Seus números: ${numerosEscolhidos.join(', ')}`);
+            }
+            
+            if (numerosEscolhidos.length === 0) {
+                atualizarSaida("Nenhum número válido foi inserido para a rifa. Você não participará do sorteio.", 'fail');
+                // Consider if you want to refund here or just continue without participation
+                verificarFimJogo();
+                return;
+            }
+
+            atualizarSaida(`Seus números escolhidos para o sorteio: ${numerosEscolhidos.join(', ')}`);
+
+            let numeroSorteado = Math.floor(Math.random() * 1000) + 1; // Apenas um número é sorteado
+            atualizarSaida(`O número sorteado na rifa foi: ${numeroSorteado}`);
+
+            let acertou = false;
+            for (let i = 0; i < numerosEscolhidos.length; i++) {
+                if (numerosEscolhidos[i] === numeroSorteado) {
+                    acertou = true;
+                    break; // Se acertou um, não precisa verificar os outros
                 }
+            }
 
-                let numeroSorteado = Math.floor(Math.random() * 1000) + 1;
-                atualizarSaida(`O número sorteado na rifa foi: ${numeroSorteado}`);
-
-                if (numeroEscolhido === numeroSorteado) {
-                    saldoDinheiro += 500.0;
-                    ganhouRifa = true;
-                    atualizarSaida("PARABÉNS! Você acertou o número da rifa e ganhou R$500,00!", 'success');
-                } else {
-                    atualizarSaida("Que pena! Não foi dessa vez. Você não ganhou na rifa.", 'fail');
-                }
+            if (acertou) {
+                saldoDinheiro += 500.0; // Ganha R$500 apenas uma vez se acertar
+                ganhouRifa = true;
+                atualizarSaida(`PARABÉNS! Um dos seus números (${numeroSorteado}) foi sorteado na rifa e você ganhou R$500,00!`, 'success');
             } else {
-                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer R$5,00).", 'fail');
+                atualizarSaida("Que pena! Nenhum dos seus números foi sorteado na rifa.", 'fail');
             }
             verificarFimJogo();
         }
@@ -558,6 +658,7 @@
         }
 
         function finalizarJogo() {
+            stopTimer(); // Para o timer ao finalizar o jogo
             submitButton.disabled = true; // Disable main submit button
             input.disabled = true; // Disable main input
             input.style.display = 'none'; // Hide input
