@@ -14,7 +14,7 @@
             --text-color-light: #E0FFE0;
             --border-color: var(--neon-green);
             --button-hover-bg: rgba(57, 255, 20, 0.2);
-            --shadow-glow: rgba(57, 255, 20, 0.7);
+            --shadow-glow: rgba极(57, 255, 20, 0.7);
             --success-color: #00BFFF;
             --fail-color: #FF4500;
             --progress-bg: #0a3d0a;
@@ -60,7 +60,7 @@
             padding: 40px;
             border: 2px solid var(--border-color);
             border-radius: 15px;
-            box-shadow: 0 0 30px var(--shadow-glow), inset 极 0 10px rgba(57, 255, 20, 0.3);
+            box-shadow: 0 0 30px var(--shadow-glow), inset 0 0 10px rgba(57, 255, 20, 0.3);
             width: 90%;
             max-width: 700px;
             text-align: center;
@@ -411,7 +411,7 @@
             border-radius: 30px;
             font-family: 'Roboto', sans-serif;
             outline: none;
-            box-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+            box-shadow: 0 极 8px rgba(57, 255, 20, 0.4);
             transition: all 0.3s ease;
         }
         .custom-prompt input:focus {
@@ -434,7 +434,7 @@
             background: var(--dark-green);
             color: white;
             border: none;
-            border-radius: 30极;
+            border-radius: 30px;
             cursor: pointer;
             transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             box-shadow: 0 0 15px rgba(57, 255, 20, 0.6);
@@ -488,7 +488,6 @@
             font-size: 1.2em;
         }
 
-        /* Estilos para os botões de adicionar/remover garrafas */
         .bottle-controls {
             display: flex;
             justify-content: center;
@@ -968,7 +967,7 @@
                 
                 const updateDisplay = () => {
                     const displayElement = promptDiv.querySelector('.bottle-display');
-                    if (displayElement) {
+                    if (display极) {
                         displayElement.textContent = bottleCount;
                     }
                     
@@ -1122,7 +1121,7 @@
             let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
             let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
             
-            if (numerosEscolhidos.length > quantidadeR极as) {
+            if (numerosEscolhidos.length > quantidadeRifas) {
                 numerosEscolhidos = numerosEscolhidos.slice(0, quantidadeRifas);
                 atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros **${quantidadeRifas}** números serão considerados: **${numerosEscolhidos.join(', ')}**`);
             } else if (numerosEscolhidos.length < quantidadeRifas) {
