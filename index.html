@@ -20,6 +20,7 @@
             --progress-bg: #0a3d0a;
             --progress-fill: #0f6;
             --goal-color: #FFD700;
+            --stat-color: #9370DB;
         }
 
         body {
@@ -59,7 +60,7 @@
             padding: 40px;
             border: 2px solid var(--border-color);
             border-radius: 15px;
-            box-shadow: 0 0 30px var(--shadow-glow), inset 0 0 10px rgba(57, 255, 20, 0.3);
+            box-shadow: 0 0 30px var(--shadow-glow), inset 极 0 10px rgba(57, 255, 20, 0.3);
             width: 90%;
             max-width: 700px;
             text-align: center;
@@ -148,6 +149,46 @@
             background: linear-gradient(90deg, var(--progress-fill), #7CFC00);
             border-radius: 8px;
             transition: width 0.5s ease;
+        }
+
+        .stats-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--stat-color);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(147, 112, 219, 0.4);
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(147, 112, 219, 0.3);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+            color: var(--stat-color);
+            text-shadow: 0 0 5px rgba(147, 112, 219, 0.8);
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--text-color-light);
         }
 
         #output {
@@ -393,7 +434,7 @@
             background: var(--dark-green);
             color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 30极;
             cursor: pointer;
             transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             box-shadow: 0 0 15px rgba(57, 255, 20, 0.6);
@@ -561,6 +602,12 @@
             .info-card .value {
                 font-size: 18px;
             }
+            .stat-label {
+                font-size: 14px;
+            }
+            .stat-value {
+                font-size: 16px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -622,6 +669,12 @@
             .info-card .value {
                 font-size: 16px;
             }
+            .stat-label {
+                font-size: 13px;
+            }
+            .stat-value {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -651,6 +704,40 @@
             <div class="progress-bar" id="progressBar" style="width: 1%"></div>
         </div>
         
+        <div class="stats-container">
+            <div class="stat-row">
+                <div class="stat-label">
+                    <span>💧</span>
+                    <span>Garrafinhas Compradas (Total)</span>
+                </div>
+                <div class="stat-value" id="totalBottles">0 unidades</div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-label">
+                    <span>📈</span>
+                    <span>Valor Médio de Compra</span>
+                </div>
+                <div class="stat-value" id="avgPrice">~0.00 K</div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-label">
+                    <span>💸</span>
+                    <span>Total Gasto em Compras</span>
+                </div>
+                <div class="stat-value" id="totalSpent">~0.00 K</div>
+            </div>
+            
+            <div class="stat-row">
+                <div class="stat-label">
+                    <span>📈</span>
+                    <span>Lucro Estimado</span>
+                </div>
+                <div class="stat-value" id="estimatedProfit">+0.00 K</div>
+            </div>
+        </div>
+        
         <div id="output"></div>
         <div id="mainMenuButtons"></div> 
 
@@ -664,6 +751,12 @@
         let ganhouRifa = false;
         let finalTime = "00:00:00";
         const MAX_GARRAFAS = 12;
+        
+        // Variáveis para estatísticas
+        let totalGarrafasCompradas = 0;
+        let totalGastoCompras = 0;
+        let garrafasVendidas = 0;
+        let totalReceitaVendas = 0;
 
         const funnyExcuses = [
             "Como diria a Marisa Maiô: 'Hoje eu tô só no vapor... e na pose'.",
@@ -711,6 +804,12 @@
         const bottleCountElement = document.getElementById('bottleCount');
         const progressBarElement = document.getElementById('progressBar');
         
+        // Elementos de estatísticas
+        const totalBottlesElement = document.getElementById('totalBottles');
+        const avgPriceElement = document.getElementById('avgPrice');
+        const totalSpentElement = document.getElementById('totalSpent');
+        const estimatedProfitElement = document.getElementById('estimatedProfit');
+        
         let startTime;
         let timerInterval;
         let currentBottlePrice = 0;
@@ -722,6 +821,27 @@
             // Atualizar barra de progresso
             const progressPercent = Math.min(100, (saldoDinheiro / 500) * 100);
             progressBarElement.style.width = `${progressPercent}%`;
+            
+            // Atualizar estatísticas
+            updateStatistics();
+        }
+        
+        function updateStatistics() {
+            totalBottlesElement.textContent = totalGarrafasCompradas + ' unidades';
+            
+            const avgPrice = totalGarrafasCompradas > 0 ? (totalGastoCompras / totalGarrafasCompradas).toFixed(2) : "0.00";
+            avgPriceElement.textContent = '~' + avgPrice + ' K';
+            
+            totalSpentElement.textContent = '~' + totalGastoCompras.toFixed(2) + ' K';
+            
+            // Lucro estimado = (valor das garrafas atuais + vendas já realizadas) - total gasto
+            const valorGarrafasAtuais = quantidadeGarrafasAgua * 5;
+            const lucroEstimado = (valorGarrafasAtuais + totalReceitaVendas) - totalGastoCompras;
+            estimatedProfitElement.textContent = (lucroEstimado >= 0 ? '+' : '') + lucroEstimado.toFixed(2) + ' K';
+            
+            // Mudar cor do lucro
+            estimatedProfitElement.style.color = lucroEstimado >= 0 ? '#39FF14' : '#FF4500';
+            estimatedProfitElement.style.textShadow = lucroEstimado >= 0 ? '0 0 8px rgba(57, 255, 20, 0.8)' : '0 0 8px rgba(255, 69, 0, 0.8)';
         }
 
         function startTimer() {
@@ -950,7 +1070,7 @@
             raffleButton.className = 'action-button';
             raffleButton.textContent = '🎲 Jogar na rifa (Custo: 5 Kredits por bilhete - Prêmio: 500 Kredits)';
             raffleButton.addEventListener('click', async () => {
-                Array.from(main极ButtonsDiv.children).forEach(btn => btn.disabled = true);
+                Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
                 await jogarRifa();
                 Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = false);
             });
@@ -1002,7 +1122,7 @@
             let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
             let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
             
-            if (numerosEscolhidos.length > quantidadeRifas) {
+            if (numerosEscolhidos.length > quantidadeR极as) {
                 numerosEscolhidos = numerosEscolhidos.slice(0, quantidadeRifas);
                 atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros **${quantidadeRifas}** números serão considerados: **${numerosEscolhidos.join(', ')}**`);
             } else if (numerosEscolhidos.length < quantidadeRifas) {
@@ -1010,7 +1130,7 @@
             }
             
             if (numerosEscolhidos.length === 0) {
-                atualizar极ida("Nenhum número válido foi inserido para a rifa. Você não participará do sorteio.", 'fail');
+                atualizarSaida("Nenhum número válido foi inserido para a rifa. Você não participará do sorteio.", 'fail');
                 verificarFimJogo();
                 return;
             }
@@ -1067,6 +1187,8 @@
                     } else if (saldoDinheiro >= custoTotal) {
                         saldoDinheiro -= custoTotal;
                         quantidadeGarrafasAgua += garrafasComprar;
+                        totalGarrafasCompradas += garrafasComprar;
+                        totalGastoCompras += custoTotal;
                         atualizarSaida(`Você comprou **${garrafasComprar}** garrafa(s) d'água por **${custoTotal.toFixed(2)} K**. Seu saldo atual é **${saldoDinheiro.toFixed(2)} K**.`, 'success');
                     } else {
                         atualizarSaida(`Saldo insuficiente! Você precisa de **${(custoTotal - saldoDinheiro).toFixed(2)} K** a mais.`, 'fail');
@@ -1081,6 +1203,8 @@
                         const valorVenda = 5.00;
                         saldoDinheiro += valorVenda;
                         quantidadeGarrafasAgua -= 1;
+                        garrafasVendidas += 1;
+                        totalReceitaVendas += valorVenda;
                         const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
                         atualizarSaida(`✅ ${randomCompliment} Você vendeu uma garrafa por **${valorVenda.toFixed(2)} K**.`, 'success');
                     } else {
@@ -1141,6 +1265,13 @@
             ganhouRifa = false;
             output.innerHTML = '';
             resetButton.style.display = 'none';
+            
+            // Resetar estatísticas
+            totalGarrafasCompradas = 0;
+            totalGastoCompras = 0;
+            garrafasVendidas = 0;
+            totalReceitaVendas = 0;
+            
             resetTimer(); 
             iniciarJogo();
         });
