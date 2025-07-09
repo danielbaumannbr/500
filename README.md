@@ -2,6 +2,9 @@
 
 ## 🚀 Visão Geral do Jogo
 
+
+[JOGUE AQUI]([https://link-url-here.org](https://danielbaumannbr.github.io/500/))
+
 **"Quem Chega aos 500 Primeiro"** é um jogo simples e divertido onde seu objetivo principal é transformar seus **5 Kredits (K)** iniciais em **500 Kredits**.  
 Você terá duas opções principais para alcançar essa meta:
 
