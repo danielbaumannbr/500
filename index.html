@@ -19,6 +19,7 @@
             --fail-color: #FF4500;
             --progress-bg: #0a3d0a;
             --progress-fill: #0f6;
+            --goal-color: #FFD700;
         }
 
         body {
@@ -60,7 +61,7 @@
             border-radius: 15px;
             box-shadow: 0 0 30px var(--shadow-glow), inset 0 0 10px rgba(57, 255, 20, 0.3);
             width: 90%;
-            max-width: 650px;
+            max-width: 700px;
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -80,7 +81,7 @@
             font-size: clamp(28px, 5vw, 42px);
             color: var(--neon-green);
             text-shadow: 0 0 15px var(--neon-green);
-            margin-bottom: 25px;
+            margin-bottom: 10px;
             padding-bottom: 15px;
             border-bottom: 2px solid var(--border-color);
             animation: neonGlow 1.5s infinite alternate;
@@ -88,7 +89,65 @@
 
         @keyframes neonGlow {
             from { text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green); }
-            to { text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green), 极 0 40px var(--neon-green); }
+            to { text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green), 0 0 40px var(--neon-green); }
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .info-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--neon-green);
+            border-radius: 10px;
+            padding: 12px 15px;
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+        }
+
+        .info-card .label {
+            font-size: 14px;
+            color: var(--neon-green);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .info-card .goal-value {
+            color: var(--goal-color);
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 16px;
+            background: var(--progress-bg);
+            border-radius: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+            border: 1px solid var(--neon-green);
+            box-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--progress-fill), #7CFC00);
+            border-radius: 8px;
+            transition: width 0.5s ease;
         }
 
         #output {
@@ -170,7 +229,7 @@
 
         .action-button {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(17极, 3.2vw, 22px);
+            font-size: clamp(17px, 3.2vw, 22px);
             padding: 15px 30px;
             margin: 8px auto;
             background: var(--background-dark);
@@ -230,7 +289,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            margin-top: 25px;
+            margin-top: 10px;
             justify-content: center;
             align-items: center;
         }
@@ -432,25 +491,6 @@
             text-shadow: 0 0 10px var(--neon-green);
         }
 
-        .progress-container {
-            width: 100%;
-            max-width: 300px;
-            height: 20px;
-            background: var(--progress-bg);
-            border-radius: 10px;
-            margin: 15px auto;
-            overflow: hidden;
-            border: 1px solid var(--neon-green);
-            box-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--progress-fill);
-            border-radius: 10px;
-            transition: width 0.3s ease;
-        }
-
         .bottle-info {
             display: flex;
             justify-content: space-between;
@@ -514,6 +554,13 @@
             .bottle-display {
                 font-size: 20px;
             }
+            .info-card {
+                min-width: 100px;
+                padding: 10px;
+            }
+            .info-card .value {
+                font-size: 18px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -568,6 +615,13 @@
             .bottle-display {
                 font-size: 18px;
             }
+            .info-card {
+                min-width: 90px;
+                padding: 8px;
+            }
+            .info-card .value {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -575,6 +629,28 @@
     <div id="gameTimer">00:00:00</div>
     <div class="container">
         <h1>Quem Chega aos 500 Primeiro</h1>
+        
+        <div class="game-info">
+            <div class="info-card">
+                <div class="label">Saldo Atual</div>
+                <div class="value" id="currentBalance">5.00 K</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="label">Meta</div>
+                <div class="value goal-value">500.00 K</div>
+            </div>
+            
+            <div class="info-card">
+                <div class="label">Garrafas</div>
+                <div class="value" id="bottleCount">0/12</div>
+            </div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 1%"></div>
+        </div>
+        
         <div id="output"></div>
         <div id="mainMenuButtons"></div> 
 
@@ -630,11 +706,23 @@
         const submitButton = document.getElementById('submit');
         const resetButton = document.getElementById('reset');
         const mainMenuButtonsDiv = document.getElementById('mainMenuButtons'); 
-        const gameTimerElement = document.getElementById('gameTimer'); 
+        const gameTimerElement = document.getElementById('gameTimer');
+        const currentBalanceElement = document.getElementById('currentBalance');
+        const bottleCountElement = document.getElementById('bottleCount');
+        const progressBarElement = document.getElementById('progressBar');
         
         let startTime;
         let timerInterval;
         let currentBottlePrice = 0;
+
+        function updateStatusDisplay() {
+            currentBalanceElement.textContent = saldoDinheiro.toFixed(2) + ' K';
+            bottleCountElement.textContent = quantidadeGarrafasAgua + '/' + MAX_GARRAFAS;
+            
+            // Atualizar barra de progresso
+            const progressPercent = Math.min(100, (saldoDinheiro / 500) * 100);
+            progressBarElement.style.width = `${progressPercent}%`;
+        }
 
         function startTimer() {
             startTime = Date.now();
@@ -650,7 +738,7 @@
             stopTimer();
             gameTimerElement.textContent = '00:00:00';
             startTime = null;
-            final极 = "00:00:00";
+            finalTime = "00:00:00";
         }
 
         function updateTimer() {
@@ -845,12 +933,12 @@
             startTimer();
             atualizarSaida("Bem-vindo ao Jogo **Quem Chega aos 500 Primeiro**! Seu objetivo é transformar seus **5 Kredits** iniciais em **500 Kredits**.");
             atualizarSaida("Você encontrou **5 Kredits** no bolso do casaco! O que você vai fazer com eles?");
+            updateStatusDisplay();
             menuPrincipal();
         }
 
         function menuPrincipal() {
-            atualizarSaida(`\n💰 Saldo Atual: **${saldoDinheiro.toFixed(2)} K** | 💧 Garrafas d'Água: **${quantidadeGarrafasAgua}/${MAX_GARRAFAS}**`);
-            atualizarSaida("Escolha sua estratégia:");
+            atualizarSaida(`\nEscolha sua estratégia:`);
             
             mainMenuButtonsDiv.innerHTML = '';
             mainMenuButtonsDiv.style.display = 'flex';
@@ -862,7 +950,7 @@
             raffleButton.className = 'action-button';
             raffleButton.textContent = '🎲 Jogar na rifa (Custo: 5 Kredits por bilhete - Prêmio: 500 Kredits)';
             raffleButton.addEventListener('click', async () => {
-                Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
+                Array.from(main极ButtonsDiv.children).forEach(btn => btn.disabled = true);
                 await jogarRifa();
                 Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = false);
             });
@@ -909,6 +997,7 @@
 
             saldoDinheiro -= custoTotalRifas;
             atualizarSaida(`Você comprou **${quantidadeRifas}** bilhete(s) de rifa, gastando **${custoTotalRifas.toFixed(2)} K**.`);
+            updateStatusDisplay();
 
             let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
             let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
@@ -921,7 +1010,7 @@
             }
             
             if (numerosEscolhidos.length === 0) {
-                atualizarSaida("Nenhum número válido foi inserido para a rifa. Você não participará do sorteio.", 'fail');
+                atualizar极ida("Nenhum número válido foi inserido para a rifa. Você não participará do sorteio.", 'fail');
                 verificarFimJogo();
                 return;
             }
@@ -946,6 +1035,7 @@
             } else {
                 atualizarSaida("😥 Que pena! Nenhum dos seus números foi sorteado na rifa.", 'fail');
             }
+            updateStatusDisplay();
             verificarFimJogo();
         }
 
@@ -981,6 +1071,7 @@
                     } else {
                         atualizarSaida(`Saldo insuficiente! Você precisa de **${(custoTotal - saldoDinheiro).toFixed(2)} K** a mais.`, 'fail');
                     }
+                    updateStatusDisplay();
                 }
             } else if (subEscolhaAgua === 2) {
                 if (quantidadeGarrafasAgua > 0) {
@@ -997,6 +1088,7 @@
                         const randomExcuse = funnyExcuses[randomIndex];
                         atualizarSaida(`🗣️ "${randomExcuse}" A garrafa continua com você.`, 'fail');
                     }
+                    updateStatusDisplay();
                 } else {
                     atualizarSaida("Você não tem garrafas d'água para vender! Compre algumas primeiro.", 'fail');
                 }
