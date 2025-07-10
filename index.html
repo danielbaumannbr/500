@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quem Chega aos 500 Primeiro</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -14,7 +14,7 @@
             --text-color-light: #E0FFE0;
             --border-color: var(--neon-green);
             --button-hover-bg: rgba(57, 255, 20, 0.2);
-            --shadow-glow: rgba极(57, 255, 20, 0.7);
+            --shadow-glow: rgba(57, 255, 20, 0.7);
             --success-color: #00BFFF;
             --fail-color: #FF4500;
             --progress-bg: #0a3d0a;
@@ -23,19 +23,24 @@
             --stat-color: #9370DB;
         }
 
-        body {
-            font-family: 'Roboto', sans-serif, 'Courier New', monospace;
-            background-color: var(--background-dark);
-            color: var(--text-color-light);
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-color-light);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             position: relative;
             background: linear-gradient(145deg, #0A0A0A 0%, #121212 50%, #0A0A0A 100%);
-            overflow: hidden;
+            overflow-x: hidden;
+            padding: 15px;
         }
 
         body::before {
@@ -57,16 +62,16 @@
 
         .container {
             background: var(--background-medium);
-            padding: 40px;
+            padding: 25px 20px;
             border: 2px solid var(--border-color);
             border-radius: 15px;
-            box-shadow: 0 0 30px var(--shadow-glow), inset 0 0 10px rgba(57, 255, 20, 0.3);
-            width: 90%;
+            box-shadow: 0 0 25px var(--shadow-glow), inset 0 0 8px rgba(57, 255, 20, 0.3);
+            width: 100%;
             max-width: 700px;
             text-align: center;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
             position: relative;
             z-index: 10;
             animation: fadeInScale 0.5s ease-out;
@@ -79,25 +84,24 @@
 
         h1 {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(28px, 5vw, 42px);
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
             color: var(--neon-green);
-            text-shadow: 0 0 15px var(--neon-green);
-            margin-bottom: 10px;
-            padding-bottom: 15px;
+            text-shadow: 0 0 12px var(--neon-green);
+            margin-bottom: 15px;
+            padding-bottom: 12px;
             border-bottom: 2px solid var(--border-color);
             animation: neonGlow 1.5s infinite alternate;
         }
 
         @keyframes neonGlow {
-            from { text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green); }
-            to { text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green), 0 0 40px var(--neon-green); }
+            from { text-shadow: 0 0 8px var(--neon-green), 0 0 16px var(--neon-green); }
+            to { text-shadow: 0 0 16px var(--neon-green), 0 0 24px var(--neon-green), 0 0 32px var(--neon-green); }
         }
 
         .game-info {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
             margin-bottom: 10px;
         }
 
@@ -105,25 +109,23 @@
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid var(--neon-green);
             border-radius: 10px;
-            padding: 12px 15px;
-            flex: 1;
-            min-width: 120px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+            box-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
         }
 
         .info-card .label {
-            font-size: 14px;
+            font-size: clamp(0.75rem, 3.2vw, 0.9rem);
             color: var(--neon-green);
             margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
         }
 
         .info-card .value {
-            font-size: 20px;
+            font-size: clamp(1.1rem, 4.2vw, 1.4rem);
             font-weight: bold;
             font-family: 'Orbitron', sans-serif;
         }
@@ -135,39 +137,39 @@
 
         .progress-container {
             width: 100%;
-            height: 16px;
+            height: 14px;
             background: var(--progress-bg);
-            border-radius: 8px;
+            border-radius: 7px;
             margin: 10px 0;
             overflow: hidden;
             border: 1px solid var(--neon-green);
-            box-shadow: 0 0 8px rgba(57, 255, 20, 0.3);
+            box-shadow: 0 0 6px rgba(57, 255, 20, 0.3);
         }
 
         .progress-bar {
             height: 100%;
             background: linear-gradient(90deg, var(--progress-fill), #7CFC00);
-            border-radius: 8px;
+            border-radius: 7px;
             transition: width 0.5s ease;
         }
 
         .stats-container {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             margin: 15px 0;
-            padding: 15px;
+            padding: 12px;
             background: rgba(0, 0, 0, 0.7);
             border: 1px solid var(--stat-color);
             border-radius: 10px;
-            box-shadow: 0 0 15px rgba(147, 112, 219, 0.4);
+            box-shadow: 0 0 12px rgba(147, 112, 219, 0.4);
         }
 
         .stat-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 7px 0;
             border-bottom: 1px dashed rgba(147, 112, 219, 0.3);
         }
 
@@ -178,14 +180,14 @@
         .stat-label {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 16px;
+            gap: 6px;
+            font-size: clamp(0.8rem, 3.5vw, 1rem);
             color: var(--stat-color);
-            text-shadow: 0 0 5px rgba(147, 112, 219, 0.8);
+            text-shadow: 0 0 4px rgba(147, 112, 219, 0.8);
         }
 
         .stat-value {
-            font-size: 18px;
+            font-size: clamp(0.9rem, 3.8vw, 1.1rem);
             font-weight: bold;
             font-family: 'Orbitron', sans-serif;
             color: var(--text-color-light);
@@ -194,98 +196,97 @@
         #output {
             background: #000;
             border: 2px solid var(--border-color);
-            padding: 20px;
+            padding: 15px;
             border-radius: 8px;
             color: var(--text-color-light);
-            font-size: clamp(15px, 2.5vw, 19px);
-            text-shadow: 0 0 5px rgba(57, 255, 20, 0.5);
-            line-height: 1.7;
+            font-size: clamp(0.85rem, 3.2vw, 1rem);
+            text-shadow: 0 0 4px rgba(57, 255, 20, 0.5);
+            line-height: 1.6;
             font-weight: bold;
             text-align: left;
-            max-height: 300px;
-            min-height: 120px;
+            max-height: 220px;
+            min-height: 90px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--neon-green) var(--background-dark);
         }
 
         #output::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         #output::-webkit-scrollbar-track {
             background: var(--background-dark);
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         #output::-webkit-scrollbar-thumb {
             background-color: var(--neon-green);
-            border-radius: 10px;
-            border: 2px solid var(--background-medium);
+            border-radius: 8px;
+            border: 1px solid var(--background-medium);
         }
 
         #output p {
-            margin: 8px 0;
+            margin: 6px 0;
             padding: 2px 0;
         }
 
         #output p.success-message {
             color: var(--success-color);
-            text-shadow: 0 0 8px rgba(0, 191, 255, 0.8);
+            text-shadow: 0 0 6px rgba(0, 191, 255, 0.8);
         }
 
         #output p.fail-message {
             color: var(--fail-color);
-            text-shadow: 0 0 8px rgba(255, 69, 0, 0.8);
+            text-shadow: 0 0 6px rgba(255, 69, 0, 0.8);
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         #input {
             width: 100%;
-            padding: 18px;
-            box-sizing: border-box;
+            padding: 14px;
             background: #000;
             color: var(--neon-green);
             border: 2px solid var(--border-color);
-            border-radius: 30px;
+            border-radius: 25px;
             font-family: 'Roboto', sans-serif;
-            font-size: clamp(17px, 3.2vw, 22px);
+            font-size: clamp(1rem, 4vw, 1.2rem);
             text-align: center;
             outline: none;
             transition: all 0.3s ease;
-            box-shadow: 0 0 8px rgba(57, 255, 20, 0.4);
+            box-shadow: 0 0 6px rgba(57, 255, 20, 0.4);
         }
-
+        
         #input:focus {
             border-color: var(--neon-green);
-            box-shadow: 0 0 15px var(--shadow-glow);
+            box-shadow: 0 0 12px var(--shadow-glow);
             transform: scale(1.01);
         }
 
         .action-button {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(17px, 3.2vw, 22px);
-            padding: 15px 30px;
-            margin: 8px auto;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            padding: 12px 20px;
+            margin: 6px auto;
             background: var(--background-dark);
             color: var(--neon-green);
             border: 2px solid var(--border-color);
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
             width: 100%;
-            max-width: 300px;
+            max-width: 320px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 0.8px;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease, background 0.4s ease;
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
         }
 
         .action-button::before {
@@ -305,15 +306,14 @@
 
         .action-button:hover:not(:disabled) {
             background: var(--button-hover-bg);
-            box-shadow: 0 0 20px var(--shadow-glow);
-            transform: translateY(-3px) scale(1.02);
-            color: var(--neon-green);
+            box-shadow: 0 0 18px var(--shadow-glow);
+            transform: translateY(-2px) scale(1.02);
         }
         
         .action-button:active:not(:disabled) {
             transform: translateY(0);
-            box-shadow: 0 0 15px var(--shadow-glow);
-            background-color: rgba(57, 255, 20, 0.4);
+            box-shadow: 0 0 12px var(--shadow-glow);
+            background-color: rgba(57, 255, 20, 0.3);
         }
 
         .action-button:disabled {
@@ -329,25 +329,77 @@
         #mainMenuButtons {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 14px;
             margin-top: 10px;
             justify-content: center;
             align-items: center;
-        }
-        #mainMenuButtons .action-button {
-            max-width: 350px;
+            width: 100%;
         }
 
-        @media (min-width: 600px) {
+        #mainMenuButtons .action-button {
+            max-width: 340px;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                padding: 25px;
+            }
+            
+            .container {
+                padding: 35px 30px;
+                gap: 22px;
+            }
+            
+            .game-info {
+                gap: 15px;
+            }
+            
+            .info-card {
+                padding: 12px 15px;
+            }
+            
+            .progress-container {
+                height: 16px;
+            }
+            
+            .stats-container {
+                padding: 15px;
+                gap: 12px;
+            }
+            
+            #output {
+                padding: 18px;
+                max-height: 260px;
+                min-height: 120px;
+                font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+            }
+            
             #mainMenuButtons {
                 flex-direction: row;
                 flex-wrap: wrap;
-                align-items: flex-start;
                 justify-content: center;
             }
+            
             #mainMenuButtons .action-button {
-                flex: 1 1 calc(50% - 20px);
-                margin: 10px;
+                flex: 1 1 calc(50% - 15px);
+                margin: 8px;
+                max-width: none;
+                font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+                padding: 14px 20px;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .container {
+                max-width: 800px;
+            }
+            
+            .info-card .label {
+                font-size: 0.95rem;
+            }
+            
+            .info-card .value {
+                font-size: 1.5rem;
             }
         }
 
@@ -362,27 +414,26 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(3px);
+            backdrop-filter: blur(4px);
         }
 
         .custom-prompt {
             background: var(--background-medium);
-            padding: 35px;
+            padding: 25px 20px;
             border: 2px solid var(--neon-green);
             border-radius: 12px;
             z-index: 10000;
-            width: 90%;
+            width: 95%;
             max-width: 500px;
             text-align: center;
-            color: var(--text-color-light);
+            color: var(--text极-color-light);
             font-family: 'Roboto', sans-serif;
-            box-shadow: 0 0 35px var(--shadow-glow), inset 0 0 10px rgba(57, 255, 20, 0.4);
+            box-shadow: 0 0 30px var(--shadow-glow), inset 0 0 8px rgba(57, 255, 20, 0.4);
             animation: promptEntry 0.3s ease-out;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            margin: 0;
         }
 
         @keyframes promptEntry {
@@ -391,125 +442,128 @@
         }
 
         .custom-prompt p {
-            font-size: clamp(19px, 4.8vw, 26px);
-            margin-bottom: 25px;
-            text-shadow: 0 0 10px var(--neon-green);
+            font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+            margin-bottom: 20px;
+            text-shadow: 0 0 8px var(--neon-green);
             font-weight: bold;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .custom-prompt input {
-            font-size: clamp(17px, 3.8vw, 22px);
-            padding: 18px;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            padding: 14px;
             width: 90%;
-            max-width: 350px;
-            margin: 20px auto;
+            max-width: 340px;
+            margin: 15px auto;
             text-align: center;
             background: #000;
             color: var(--neon-green);
             border: 2px solid var(--border-color);
-            border-radius: 30px;
+            border-radius: 25px;
             font-family: 'Roboto', sans-serif;
             outline: none;
-            box-shadow: 0 极 8px rgba(57, 255, 20, 0.4);
+            box-shadow: 0 0 6px rgba(57, 255, 20, 0.4);
             transition: all 0.3s ease;
         }
+        
         .custom-prompt input:focus {
             border-color: var(--neon-green);
-            box-shadow: 0 0 15px var(--shadow-glow);
+            box-shadow: 0 0 14px var(--shadow-glow);
         }
 
         .custom-prompt .button-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-top: 25px;
+            gap: 12px;
+            margin-top: 20px;
         }
 
         .custom-prompt button {
             font-family: 'Orbitron', sans-serif;
-            font-size: clamp(17px, 3.8vw, 22px);
-            padding: 15px 40px;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            padding: 12px 25px;
             margin: 0 auto;
             background: var(--dark-green);
             color: white;
             border: none;
-            border-radius: 30px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 0 15px rgba(57, 255, 20, 0.6);
+            transition: all 0.3s ease;
+            box-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
             width: 85%;
-            max-width: 280px;
+            max-width: 260px;
             text-transform: uppercase;
         }
 
         .custom-prompt button.secondary {
             background-color: #333;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
             color: var(--text-color-light);
         }
+        
         .custom-prompt button.secondary:hover {
             background-color: #555;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
         }
 
         .custom-prompt button:hover {
             background: var(--neon-green);
-            transform: translateY(-3px);
-            box-shadow: 0 0 25px var(--shadow-glow);
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px var(--shadow-glow);
             color: var(--background-dark);
         }
+        
         .custom-prompt button:active {
             transform: translateY(0);
-            box-shadow: 0 0 15px var(--shadow-glow);
+            box-shadow: 0 0 12px var(--shadow-glow);
         }
 
         #gameTimer {
-            position: absolute;
-            top: 20px;
-            right: 20px;
+            position: fixed;
+            top: 12px;
+            right: 12px;
             background: rgba(0, 0, 0, 0.8);
             color: var(--neon-green);
-            padding: 10px 18px;
+            padding: 8px 14px;
             border-radius: 8px;
             font-family: 'Orbitron', monospace;
-            font-size: clamp(16px, 2.8vw, 20px);
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem);
             border: 1px solid var(--border-color);
-            box-shadow: 0 0 12px rgba(57, 255, 20, 0.5);
+            box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
             z-index: 1001;
-            min-width: 100px;
+            min-width: 85px;
             text-align: center;
         }
 
         .final-time {
             color: var(--neon-green);
-            text-shadow: 0 0 10px var(--neon-green);
+            text-shadow: 0 0 8px var(--neon-green);
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
         .bottle-controls {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
-            margin: 20px 0;
+            gap: 12px;
+            margin: 15px 0;
         }
 
         .bottle-btn {
-            width: 50px;
-            height: 50px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: var(--dark-green);
             color: white;
-            font-size: 28px;
+            font-size: 22px;
             border: 2px solid var(--neon-green);
             cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+            box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
         }
 
         .bottle-btn:hover {
@@ -523,156 +577,33 @@
         }
 
         .bottle-display {
-            font-size: 24px;
+            font-size: 1.4rem;
             font-weight: bold;
-            min-width: 60px;
+            min-width: 45px;
             text-align: center;
             color: var(--neon-green);
-            text-shadow: 0 0 10px var(--neon-green);
+            text-shadow: 0 0 8px var(--neon-green);
         }
 
         .bottle-info {
             display: flex;
             justify-content: space-between;
             width: 100%;
-            max-width: 300px;
+            max-width: 280px;
             margin: 5px auto;
-            font-size: 14px;
+            font-size: 0.9rem;
             color: var(--text-color-light);
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 25px;
-                width: 95%;
-                gap: 18px;
-            }
-            h1 {
-                font-size: clamp(26px, 6.5vw, 40px);
-            }
-            #output {
-                max-height: 250px;
-                min-height: 100px;
-                font-size: clamp(14px, 2.8vw, 18px);
-                padding: 15px;
-            }
-            .action-button {
-                max-width: 100%;
-                font-size: clamp(16px, 4vw, 20px);
-                padding: 12px 25px;
-            }
-            #mainMenuButtons .action-button {
-                flex: 1 1 100%;
-                margin: 8px 0;
-            }
-            .custom-prompt {
-                padding: 25px;
-            }
-            .custom-prompt p {
-                font-size: clamp(17px, 5.5vw, 24px);
-                margin-bottom: 20px;
-            }
-            .custom-prompt input {
-                font-size: clamp(15px, 4.5vw, 20px);
-                padding: 15px;
-            }
-            .custom-prompt button {
-                font-size: clamp(15px, 4.5vw, 20px);
-                padding: 12px 30px;
-            }
-            #gameTimer {
-                font-size: clamp(14px, 3.5vw, 18px);
-                padding: 8px 12px;
-                top: 15px;
-                right: 15px;
-            }
+        @media (min-width: 768px) {
             .bottle-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 22px;
+                width: 45px;
+                height: 45px;
+                font-size: 26px;
             }
+            
             .bottle-display {
-                font-size: 20px;
-            }
-            .info-card {
-                min-width: 100px;
-                padding: 10px;
-            }
-            .info-card .value {
-                font-size: 18px;
-            }
-            .stat-label {
-                font-size: 14px;
-            }
-            .stat-value {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px;
-                gap: 15px;
-            }
-            h1 {
-                font-size: clamp(22px, 7vw, 36px);
-                padding-bottom: 10px;
-            }
-            #output {
-                font-size: clamp(13px, 3.5vw, 17px);
-                max-height: 180px;
-                min-height: 80px;
-                padding: 12px;
-            }
-            .action-button {
-                font-size: clamp(15px, 4.5vw, 19px);
-                padding: 10px 20px;
-            }
-            .custom-prompt {
-                padding: 20px;
-            }
-            .custom-prompt p {
-                font-size: clamp(15px, 6vw, 22px);
-                margin-bottom: 15px;
-            }
-            .custom-prompt input {
-                font-size: clamp(13px, 5vw, 18px);
-                padding: 12px;
-            }
-            .custom-prompt .button-group {
-                gap: 10px;
-                margin-top: 15px;
-            }
-            .custom-prompt button {
-                font-size: clamp(13px, 5vw, 18px);
-                padding: 10px 25px;
-            }
-            #gameTimer {
-                font-size: clamp(12px, 4vw, 16px);
-                padding: 6px 10px;
-                top: 10px;
-                right: 10px;
-            }
-            .bottle-btn {
-                width: 35px;
-                height: 35px;
-                font-size: 18px;
-            }
-            .bottle-display {
-                font-size: 18px;
-            }
-            .info-card {
-                min-width: 90px;
-                padding: 8px;
-            }
-            .info-card .value {
-                font-size: 16px;
-            }
-            .stat-label {
-                font-size: 13px;
-            }
-            .stat-value {
-                font-size: 14px;
+                font-size: 1.6rem;
             }
         }
     </style>
@@ -694,7 +625,7 @@
             </div>
             
             <div class="info-card">
-                <div class="label">Garrafas</div>
+                <div class="label">Garrafas</极div>
                 <div class="value" id="bottleCount">0/12</div>
             </div>
         </div>
@@ -707,7 +638,7 @@
             <div class="stat-row">
                 <div class="stat-label">
                     <span>💧</span>
-                    <span>Garrafinhas Compradas (Total)</span>
+                    <span>Garrafinhas Compradas</span>
                 </div>
                 <div class="stat-value" id="totalBottles">0 unidades</div>
             </div>
@@ -740,7 +671,7 @@
         <div id="output"></div>
         <div id="mainMenuButtons"></div> 
 
-        <input type="text" id="input" placeholder="Digite sua escolha..." style="display:none;" />
+        <input type="text" id="input" placeholder="Digite sua escolha..." style="display:none;">
         <button id="submit" class="action-button" style="display:none;">🎲 Enviar</button>
         <button id="reset" class="action-button" style="display:none;">🔄 Reiniciar Jogo</button>
     </div>
@@ -967,7 +898,7 @@
                 
                 const updateDisplay = () => {
                     const displayElement = promptDiv.querySelector('.bottle-display');
-                    if (display极) {
+                    if (displayElement) {
                         displayElement.textContent = bottleCount;
                     }
                     
@@ -1050,8 +981,8 @@
         function iniciarJogo() {
             resetTimer();
             startTimer();
-            atualizarSaida("Bem-vindo ao Jogo **Quem Chega aos 500 Primeiro**! Seu objetivo é transformar seus **5 Kredits** iniciais em **500 Kredits**.");
-            atualizarSaida("Você encontrou **5 Kredits** no bolso do casaco! O que você vai fazer com eles?");
+            atualizarSaida("Bem-vindo ao Jogo <strong>Quem Chega aos 500 Primeiro</strong>! Seu objetivo é transformar seus <strong>5 Kredits</strong> iniciais em <strong>500 Kredits</strong>.");
+            atualizarSaida("Você encontrou <strong>5 Kredits</strong> no bolso do casaco! O que você vai fazer com eles?");
             updateStatusDisplay();
             menuPrincipal();
         }
@@ -1067,7 +998,7 @@
 
             const raffleButton = document.createElement('button');
             raffleButton.className = 'action-button';
-            raffleButton.textContent = '🎲 Jogar na rifa (Custo: 5 Kredits por bilhete - Prêmio: 500 Kredits)';
+            raffleButton.innerHTML = '🎲 Jogar na rifa<br><small>(5 Kredits por bilhete)</small>';
             raffleButton.addEventListener('click', async () => {
                 Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
                 await jogarRifa();
@@ -1077,7 +1008,7 @@
 
             const manageBottlesButton = document.createElement('button');
             manageBottlesButton.className = 'action-button';
-            manageBottlesButton.textContent = "💧 Gerenciar Garrafas d'Água (Comprar/Vender)";
+            manageBottlesButton.innerHTML = "💧 Gerenciar Garrafas<br><small>(Comprar/Vender)</small>";
             manageBottlesButton.addEventListener('click', async () => {
                 Array.from(mainMenuButtonsDiv.children).forEach(btn => btn.disabled = true);
                 await gerenciarGarrafas();
@@ -1092,12 +1023,12 @@
             mainMenuButtonsDiv.style.display = 'none';
 
             if (saldoDinheiro < 5.0) {
-                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer no mínimo **5 Kredits**).", 'fail');
+                atualizarSaida("\nVocê não tem saldo suficiente para jogar na rifa (requer no mínimo <strong>5 Kredits</strong>).", 'fail');
                 verificarFimJogo();
                 return;
             }
 
-            let quantidadeRifasStr = await customPrompt(`Seu saldo atual: ${saldoDinheiro.toFixed(2)} K\nQuantas rifas você deseja comprar (5 Kredits cada)?`);
+            let quantidadeRifasStr = await customPrompt(`Seu saldo atual: ${saldoDinheiro.toFixed(2)} K<br>Quantas rifas você deseja comprar (5 Kredits cada)?`);
             let quantidadeRifas = parseInt(quantidadeRifasStr);
 
             if (isNaN(quantidadeRifas) || quantidadeRifas <= 0) {
@@ -1109,23 +1040,23 @@
             const custoTotalRifas = quantidadeRifas * 5.0;
 
             if (saldoDinheiro < custoTotalRifas) {
-                atualizarSaida(`Saldo insuficiente! Você precisa de **${(custoTotalRifas - saldoDinheiro).toFixed(2)} K** a mais para comprar ${quantidadeRifas} rifa(s).`, 'fail');
+                atualizarSaida(`Saldo insuficiente! Você precisa de <strong>${(custoTotalRifas - saldoDinheiro).toFixed(2)} K</strong> a mais para comprar ${quantidadeRifas} rifa(s).`, 'fail');
                 verificarFimJogo();
                 return;
             }
 
             saldoDinheiro -= custoTotalRifas;
-            atualizarSaida(`Você comprou **${quantidadeRifas}** bilhete(s) de rifa, gastando **${custoTotalRifas.toFixed(2)} K**.`);
+            atualizarSaida(`Você comprou <strong>${quantidadeRifas}</strong> bilhete(s) de rifa, gastando <strong>${custoTotalRifas.toFixed(2)} K</strong>.`);
             updateStatusDisplay();
 
-            let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
+            let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) entre 1 e 1000, separados por vírgula.<br><small>Ex: 10, 55, 120</small>`);
             let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
             
             if (numerosEscolhidos.length > quantidadeRifas) {
                 numerosEscolhidos = numerosEscolhidos.slice(0, quantidadeRifas);
-                atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros **${quantidadeRifas}** números serão considerados: **${numerosEscolhidos.join(', ')}**`);
+                atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros <strong>${quantidadeRifas}</strong> números serão considerados: <strong>${numerosEscolhidos.join(', ')}</strong>`);
             } else if (numerosEscolhidos.length < quantidadeRifas) {
-                atualizarSaida(`Você inseriu menos números do que rifas compradas. Seus números: **${numerosEscolhidos.join(', ')}**`);
+                atualizarSaida(`Você inseriu menos números do que rifas compradas. Seus números: <strong>${numerosEscolhidos.join(', ')}</strong>`);
             }
             
             if (numerosEscolhidos.length === 0) {
@@ -1134,10 +1065,10 @@
                 return;
             }
 
-            atualizarSaida(`Seus números escolhidos para o sorteio: **${numerosEscolhidos.join(', ')}**`);
+            atualizarSaida(`Seus números escolhidos para o sorteio: <strong>${numerosEscolhidos.join(', ')}</strong>`);
 
             let numeroSorteado = Math.floor(Math.random() * 1000) + 1;
-            atualizarSaida(`O número sorteado na rifa foi: **${numeroSorteado}**`);
+            atualizarSaida(`O número sorteado na rifa foi: <strong>${numeroSorteado}</strong>`);
 
             let acertou = false;
             for (let i = 0; i < numerosEscolhidos.length; i++) {
@@ -1150,7 +1081,7 @@
             if (acertou) {
                 saldoDinheiro += 500.0;
                 ganhouRifa = true;
-                atualizarSaida(`🎉 **PARABÉNS!** Um dos seus números (**${numeroSorteado}**) foi sorteado na rifa e você ganhou **500 Kredits**!`, 'success');
+                atualizarSaida(`🎉 <strong>PARABÉNS!</strong> Um dos seus números (<strong>${numeroSorteado}</strong>) foi sorteado na rifa e você ganhou <strong>500 Kredits</strong>!`, 'success');
             } else {
                 atualizarSaida("😥 Que pena! Nenhum dos seus números foi sorteado na rifa.", 'fail');
             }
@@ -1182,15 +1113,15 @@
                 if (garrafasComprar > 0) {
                     const custoTotal = garrafasComprar * precoCompraGarrafa;
                     if (quantidadeGarrafasAgua + garrafasComprar > MAX_GARRAFAS) {
-                        atualizarSaida(`Você só consegue carregar no máximo **${MAX_GARRAFAS}** garrafas d'água por vez!`, 'fail');
+                        atualizarSaida(`Você só consegue carregar no máximo <strong>${MAX_GARRAFAS}</strong> garrafas d'água por vez!`, 'fail');
                     } else if (saldoDinheiro >= custoTotal) {
                         saldoDinheiro -= custoTotal;
                         quantidadeGarrafasAgua += garrafasComprar;
                         totalGarrafasCompradas += garrafasComprar;
                         totalGastoCompras += custoTotal;
-                        atualizarSaida(`Você comprou **${garrafasComprar}** garrafa(s) d'água por **${custoTotal.toFixed(2)} K**. Seu saldo atual é **${saldoDinheiro.toFixed(2)} K**.`, 'success');
+                        atualizarSaida(`Você comprou <strong>${garrafasComprar}</strong> garrafa(s) d'água por <strong>${custoTotal.toFixed(2)} K</strong>. Seu saldo atual é <strong>${saldoDinheiro.toFixed(2)} K</strong>.`, 'success');
                     } else {
-                        atualizarSaida(`Saldo insuficiente! Você precisa de **${(custoTotal - saldoDinheiro).toFixed(2)} K** a mais.`, 'fail');
+                        atualizarSaida(`Saldo insuficiente! Você precisa de <strong>${(custoTotal - saldoDinheiro).toFixed(2)} K</strong> a mais.`, 'fail');
                     }
                     updateStatusDisplay();
                 }
@@ -1205,7 +1136,7 @@
                         garrafasVendidas += 1;
                         totalReceitaVendas += valorVenda;
                         const randomCompliment = compliments[Math.floor(Math.random() * compliments.length)];
-                        atualizarSaida(`✅ ${randomCompliment} Você vendeu uma garrafa por **${valorVenda.toFixed(2)} K**.`, 'success');
+                        atualizarSaida(`✅ ${randomCompliment} Você vendeu uma garrafa por <strong>${valorVenda.toFixed(2)} K</strong>.`, 'success');
                     } else {
                         const randomIndex = Math.floor(Math.random() * funnyExcuses.length);
                         const randomExcuse = funnyExcuses[randomIndex];
@@ -1243,17 +1174,17 @@
 
             atualizarSaida("\n--- Fim do Jogo ---");
             atualizarSaida(`Tempo de Jogo: ⏱️ <span class="final-time">${finalTime}</span>`);
-            atualizarSaida(`Saldo Final: 💰 **${saldoDinheiro.toFixed(2)} K**`);
+            atualizarSaida(`Saldo Final: 💰 <strong>${saldoDinheiro.toFixed(2)} K</strong>`);
 
             if (status === "ganhou") {
                 if (ganhouRifa) {
-                    atualizarSaida("🏆 **PARABÉNS!** Você ganhou na rifa e alcançou **500 Kredits**!", 'success');
+                    atualizarSaida("🏆 <strong>PARABÉNS!</strong> Você ganhou na rifa e alcançou <strong>500 Kredits</strong>!", 'success');
                 } else {
-                    atualizarSaida("🏆 **PARABÉNS!** Você alcançou seu objetivo de **500 Kredits**!", 'success');
+                    atualizarSaida("🏆 <strong>PARABÉNS!</strong> Você alcançou seu objetivo de <strong>500 Kredits</strong>!", 'success');
                 }
-                atualizarSaida("🥳 **Conseguiu!** Que tal tirar um print da sua vitória e postar no Instagram? Não esqueça de me marcar: **@dan_bra** para eu repostar!", 'success');
+                atualizarSaida("🥳 <strong>Conseguiu!</strong> Que tal tirar um print da sua vitória e postar no Instagram? Não esqueça de me marcar: <strong>@dan_bra</strong> para eu repostar!", 'success');
             } else {
-                atualizarSaida("😢 **Que pena!** Seu saldo ficou abaixo de **5 Kredits** e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
+                atualizarSaida("😢 <strong>Que pena!</strong> Seu saldo ficou abaixo de <strong>5 Kredits</strong> e você não tem mais garrafas para vender. Você não tem mais capital para continuar.", 'fail');
             }
             resetButton.style.display = 'block';
         }
@@ -1264,7 +1195,6 @@
             ganhouRifa = false;
             output.innerHTML = '';
             resetButton.style.display = 'none';
-<<<<<<< HEAD
             
             // Resetar estatísticas
             totalGarrafasCompradas = 0;
@@ -1273,9 +1203,6 @@
             totalReceitaVendas = 0;
             
             resetTimer(); 
-=======
-            resetTimer();
->>>>>>> parent of f08e5e3 (Fix formatting in reset button event handler)
             iniciarJogo();
         });
 
