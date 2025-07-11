@@ -520,6 +520,39 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Novo estilo para diálogo de venda no prompt */
+        .sales-dialog-container {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border: 1px solid var(--customer-border);
+        }
+
+        .sales-dialog {
+            font-size: 0.9em;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .sales-dialog .customer-type {
+            font-size: 0.8em;
+            margin-right: 5px;
+        }
+
+        .sales-dialog .customer-line {
+            color: #4A90E2;
+            font-style: italic;
+            margin: 5px 0;
+        }
+
+        .sales-dialog .player-line {
+            color: var(--neon-green);
+            margin: 5px 0;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 25px;
@@ -572,6 +605,9 @@
             }
             .bottle-display {
                 font-size: 20px;
+            }
+            .sales-dialog-container {
+                max-height: 150px;
             }
         }
 
@@ -626,6 +662,9 @@
             }
             .bottle-display {
                 font-size: 18px;
+            }
+            .sales-dialog-container {
+                max-height: 120px;
             }
         }
     </style>
@@ -762,6 +801,9 @@
         let startTime;
         let timerInterval;
         let currentBottlePrice = 0;
+        let currentCustomer = null;
+        let currentConversation = [];
+        let persuasionAttempts = 0;
 
         function startTimer() {
             startTime = Date.now();
@@ -820,6 +862,20 @@
                 promptDiv.className = 'custom-prompt';
                 
                 let contentHtml = `<p>${message}</p>`;
+                
+                // Adiciona o histórico da conversa se existir
+                if (currentConversation.length > 0) {
+                    contentHtml += '<div class="sales-dialog-container"><div class="sales-dialog">';
+                    currentConversation.forEach(line => {
+                        if (line.type === 'customer') {
+                            contentHtml += `<div class="customer-line"><span class="customer-type">${currentCustomer.type}:</span> ${line.text}</div>`;
+                        } else {
+                            contentHtml += `<div class="player-line">Você: ${line.text}</div>`;
+                        }
+                    });
+                    contentHtml += '</div></div>';
+                }
+                
                 if (options.length > 0) {
                     contentHtml += '<div class="button-group">';
                     options.forEach(option => {
@@ -1040,7 +1096,7 @@
             let numerosEscolhidosStr = await customPrompt(`Digite ${quantidadeRifas} número(s) que você escolheu para a rifa, separados por vírgula (entre 1 e 1000). Você pode digitar menos ou mais números, mas o sorteio será baseado na quantidade de rifas que você comprou. Ex: 10, 55, 120`);
             let numerosEscolhidos = numerosEscolhidosStr.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num >= 1 && num <= 1000);
             
-            if (numerosEscolhidos.length > quantidadeR极as) {
+            if (numerosEscolhidos.length > quantidadeRifas) {
                 numerosEscolhidos = numerosEscolhidos.slice(0, quantidadeRifas);
                 atualizarSaida(`Você inseriu mais números do que rifas compradas. Apenas os primeiros **${quantidadeRifas}** números serão considerados: **${numerosEscolhidos.join(', ')}**`);
             } else if (numerosEscolhidos.length < quantidadeRifas) {
@@ -1082,20 +1138,26 @@
                 return false;
             }
 
-            const customer = customerTypes[Math.floor(Math.random() * customerTypes.length)];
+            currentCustomer = customerTypes[Math.floor(Math.random() * customerTypes.length)];
             const opener = negotiationOpeners[Math.floor(Math.random() * negotiationOpeners.length)];
             
+            // Inicia a conversa
+            currentConversation = [
+                { type: 'player', text: opener },
+                { type: 'customer', text: currentCustomer.responses[Math.floor(Math.random() * currentCustomer.responses.length)] }
+            ];
+            
             atualizarSaida(`<div class="persuasion-dialog">
-                <p>Você aborda um(a) <span class="customer-type">${customer.type}</span>: "${opener}"</p>
-                <div class="customer-response">${customer.responses[Math.floor(Math.random() * customer.responses.length)]}</div>
+                <p>Você aborda um(a) <span class="customer-type">${currentCustomer.type}</span>: "${opener}"</p>
+                <div class="customer-response">${currentConversation[1].text}</div>
             </div>`);
 
-            let persuasionAttempts = 0;
             let success = false;
             let quit = false;
+            persuasionAttempts = 0;
             
             while (!success && !quit && persuasionAttempts < 3) {
-                const options = customer.persuasions.map((p, i) => ({
+                const options = currentCustomer.persuasions.map((p, i) => ({
                     text: p.text,
                     value: i.toString()
                 }));
@@ -1110,17 +1172,23 @@
                 
                 if (choice === "quit") {
                     quit = true;
+                    currentConversation.push({ type: 'player', text: "Desisto da venda" });
                     atualizarSaida("Você desistiu da venda. O cliente vai embora.", 'fail');
                 } else {
                     persuasionAttempts++;
-                    const persuasion = customer.persuasions[parseInt(choice)];
+                    const persuasion = currentCustomer.persuasions[parseInt(choice)];
+                    
+                    // Adiciona à conversa
+                    currentConversation.push({ type: 'player', text: persuasion.text });
+                    
                     const roll = Math.floor(Math.random() * 100) + 1;
+                    const effectiveness = persuasion.effectiveness - (persuasionAttempts * 10);
                     
                     atualizarSaida(`<div class="persuasion-dialog">
                         <p>Você tenta convencer: "${persuasion.text}"</p>
                     </div>`);
                     
-                    if (roll <= (persuasion.effectiveness - (persuasionAttempts * 10))) {
+                    if (roll <= effectiveness) {
                         success = true;
                         const valorVenda = 5.00;
                         saldoDinheiro += valorVenda;
@@ -1132,6 +1200,12 @@
                             "Você foi convincente! O cliente aceitou!"
                         ];
                         
+                        const customerResponse = customerTypes.find(ct => ct.type === currentCustomer.type).responses[
+                            Math.floor(Math.random() * customerTypes.find(ct => ct.type === currentCustomer.type).responses.length)
+                        ];
+                        
+                        currentConversation.push({ type: 'customer', text: "Você me convenceu! Vou levar!" });
+                        
                         atualizarSaida(`<div class="customer-response">"Você me convenceu! Vou levar!"</div>`, 'success');
                         atualizarSaida(`✅ ${winMessages[Math.floor(Math.random() * winMessages.length)]} Você vendeu uma garrafa por ${valorVenda.toFixed(2)} K.`, 'success');
                     } else {
@@ -1141,7 +1215,13 @@
                             "A abordagem não funcionou como esperado..."
                         ];
                         
-                        atualizarSaida(`<div class="customer-response">"${customer.responses[Math.floor(Math.random() * customer.responses.length)]}"</div>`, 'fail');
+                        const customerResponse = customerTypes.find(ct => ct.type === currentCustomer.type).responses[
+                            Math.floor(Math.random() * customerTypes.find(ct => ct.type === currentCustomer.type).responses.length)
+                        ];
+                        
+                        currentConversation.push({ type: 'customer', text: customerResponse });
+                        
+                        atualizarSaida(`<div class="customer-response">"${customerResponse}"</div>`, 'fail');
                         atualizarSaida(failMessages[Math.floor(Math.random() * failMessages.length)], 'fail');
                         
                         if (persuasionAttempts < 3) {
@@ -1154,6 +1234,10 @@
             if (!success && !quit) {
                 atualizarSaida("Você esgotou suas tentativas de persuasão. O cliente vai embora.", 'fail');
             }
+            
+            // Limpa a conversa atual após o término
+            currentConversation = [];
+            currentCustomer = null;
             
             return success;
         }
